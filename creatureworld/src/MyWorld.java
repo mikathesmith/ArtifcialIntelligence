@@ -102,15 +102,15 @@ public class MyWorld extends World {
   
   
   //pass in map of calculated fitnesses to creature. Find two creatures with maximal fitnesses and breed
-  public MyCreature parentSelection(HashMap<MyCreature, Integer> fitnessMap){
+  public MyCreature parentSelection(HashMap<MyCreature, Integer> creatureFitnessMap){
 	/*Testing its entering the hashmap   
-	  for(Map.Entry<MyCreature, Integer> entry : fitnessMap.entrySet()){
+	  for(Map.Entry<MyCreature, Integer> entry : creatureFitnessMap.entrySet()){
 		  System.out.println(entry.getKey().getEnergy() + " " + entry.getValue());
 	  }
 	  */
 	  int max = 0; 
 	  ArrayList<MyCreature> fitCandidates = new ArrayList<MyCreature>();
-	  for(Map.Entry<MyCreature, Integer> entry : fitnessMap.entrySet()){
+	  for(Map.Entry<MyCreature, Integer> entry : creatureFitnessMap.entrySet()){
 		  int currentFitness = entry.getValue(); 
 		  if(currentFitness >= max){
 			  if(currentFitness > max){
@@ -123,14 +123,19 @@ public class MyWorld extends World {
 	  System.out.println("Max is "+ max);
 	  int candIndex = rand.nextInt(fitCandidates.size());
 	  MyCreature candidate = fitCandidates.get(candIndex);
-	  fitCandidates.remove(candidate); //does this alter the global hashmap? 
+	  creatureFitnessMap.remove(candidate); //does this alter the global hashmap? 
 	  return candidate;  
+  }
+  
+  //Takes two chromosomes and returns a new one by crossing them over 
+  public MyCreature crossOver(MyCreature p1, MyCreature p2){
+	  //set crossover point. 
+	  int crossoverIndex = 5; //make this the mid point, length of chromosome/2  
+	  //find out how to access values in chromosome; 
+	 // MyCreature offspring;
 	  
 	  
-	 /* for(MyCreature candidate : fitCandidates){
-		  System.out.println(candidate.getEnergy());
-		  //remove and return one randomly !  
-	  }*/
+	  return null;
   }
   
   /* The MyWorld class must override this function, which is
@@ -159,9 +164,9 @@ public class MyWorld extends World {
      MyCreature[] old_population = (MyCreature[]) old_population_btc;
      // Create a new array for the new population
      MyCreature[] new_population = new MyCreature[numCreatures];
-     int[] fitnesses = new int[numCreatures];
+   //  int[] fitnesses = new int[numCreatures];
      HashMap<MyCreature, Integer> creatureFitnessMap = new HashMap<MyCreature, Integer>(); 
-     
+
      // Here is how you can get information about old creatures and how
      // well they did in the simulation
      //query the state of every creature by executing various methods that 
@@ -173,7 +178,8 @@ public class MyWorld extends World {
      //guide the GA in selection of parents for the next generation. 
      float avgLifeTime=0f;
      int nSurvivors = 0;
-     int fitCount = 0; 
+   //  int fitCount = 0; 
+     float avgFitness =0f; 
      for(MyCreature creature : old_population) {
         // The energy of the creature.  This is zero if creature starved to
         // death, non-negative otherwise.  If this number is zero, but the 
@@ -187,10 +193,12 @@ public class MyWorld extends World {
         boolean dead = creature.isDead();
 
         int fitness = calculateFitness(energy, dead); 
-        fitnesses[fitCount] = fitness;  //store in hashtable due to keyvalue pair 
+      //  fitnesses[fitCount] = fitness;  //store in hashtable due to keyvalue pair 
         creatureFitnessMap.put(creature, fitness); 
-        fitCount++; 
+      //  fitCount++; 
         //System.out.println(fitness);
+        
+        avgFitness += (float)fitness; 
         
         if(dead) {
            // If the creature died during simulation, you can determine
@@ -204,9 +212,11 @@ public class MyWorld extends World {
      }
      
      MyCreature parent1 = parentSelection(creatureFitnessMap); 
-     MyCreature parent2 = parentSelection(creatureFitnessMap); 
-     System.out.println("Parent 1: " + parent1.parentID);
-     System.out.println("Parent 2: " + parent2.parentID);
+     MyCreature parent2 = parentSelection(creatureFitnessMap);
+     System.out.println("Parent 1: " + parent1.parentID + " Energy at death: " + parent1.getEnergy());
+     System.out.println("Parent 2: " + parent2.parentID + " Energy at death: " + parent2.getEnergy());
+     
+   //  MyCreature offspring = crossOver(parent1, parent2);
      
      //crossover, add random mutation to the chromosome. 
      //print average fitness of all creatures and plot this over generations. 
@@ -216,9 +226,11 @@ public class MyWorld extends World {
      // you define your fitness function.  You should add a print out or
      // some visual display of average fitness over generations.
      avgLifeTime /= (float) numCreatures;
+     avgFitness /= (float) numCreatures; 
      System.out.println("Simulation stats:");
      System.out.println("  Survivors    : " + nSurvivors + " out of " + numCreatures);
      System.out.println("  Avg life time: " + avgLifeTime + " turns");
+     System.out.println("  Avg fitness: " + avgFitness);
 
      
      // Having some way of measuring the fitness, you should implement a proper

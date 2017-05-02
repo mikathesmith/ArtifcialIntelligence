@@ -38,7 +38,10 @@ public class MyCreature extends Creature {
       this.numActions = numActions;  //expected from the agentfunction
       pID++; 
       parentID = pID; //way to uniquelly identify a creature 
+     
       
+      
+    
       //chromosome encoding goes here 
   }
   
