@@ -130,7 +130,7 @@ public class MyWorld extends World {
   //Takes two chromosomes and returns a new one by crossing them over 
   public MyCreature crossOver(MyCreature p1, MyCreature p2){
 	  //set crossover point. 
-	  int crossoverIndex = 5; //make this the mid point, length of chromosome/2  
+	  int crossoverIndex = 5; //make this the mid point, number of genes/2  
 	  //find out how to access values in chromosome; 
 	 // MyCreature offspring;
 	  
@@ -210,7 +210,7 @@ public class MyWorld extends World {
            avgLifeTime += (float) _numTurns;
         }
      }
-     
+     //move to below for loop, add offspring to new_population in ith position  
      MyCreature parent1 = parentSelection(creatureFitnessMap); 
      MyCreature parent2 = parentSelection(creatureFitnessMap);
      System.out.println("Parent 1: " + parent1.parentID + " Energy at death: " + parent1.getEnergy());
