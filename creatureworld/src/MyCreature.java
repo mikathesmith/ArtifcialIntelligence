@@ -9,8 +9,8 @@ import java.util.Random;
 * Implement a chromosome governed model that maps percepts to actions in the 
 * AgentFunction. Implement creature behaviour. 
 *
-* @author  
-* @version 1.0
+* @author  Mika Smith 
+* @version 2.0
 * @since   2017-04-05 
 */
 public class MyCreature extends Creature {
@@ -19,6 +19,9 @@ public class MyCreature extends Creature {
   Random rand = new Random();
     private final int numPercepts;
     private final int numActions;
+    private int[] percepts;
+    private int[] actions;
+    private int[] chromosome; 
 
   /* Empty constructor - might be a good idea here to put the code that 
    initialises the chromosome to some random state  
@@ -33,6 +36,8 @@ public class MyCreature extends Creature {
   public MyCreature(int numPercepts, int numActions) {
       this.numPercepts = numPercepts;
       this.numActions = numActions;  //expected from the agentfunction
+      percepts = new int[numPercepts];
+      actions = new int[numActions];
   }
   
   /* This function must be overridden by MyCreature, because it implements
@@ -42,9 +47,9 @@ public class MyCreature extends Creature {
   
      Input: percepts - an array of percepts
             numPercepts - the size of the array of percepts depend on the percept
-                          chosen
+                          chosen - 8
             numExpectedAction - this number tells you what the expected size
-                                of the returned array of percepts should bes
+                                of the returned array of percepts should bes -11
      Returns: an array of actions 
   */
   @Override
@@ -59,7 +64,25 @@ public class MyCreature extends Creature {
       // the percepts.  You need to replace this code.
       float actions[] = new float[numExpectedActions];
       for(int i=0;i<numExpectedActions;i++) {
-         actions[i]=rand.nextFloat();
+    	  //setting to arbitrary values, though could be used as priority as the action with
+    	  //the largest value will be executed 
+    	 if(percepts[7]==1){ //on red strawberry 
+    		 actions[9] = 10;   //eat the strawberry
+    	 }else if(percepts[0]==1 || percepts[1]==1){ //monsters in vicinity 
+    		 int moveDirection = rand.nextInt(10);
+    		 System.out.println("Avoided!");
+    		 actions[moveDirection] = 7; 
+    		 
+    	 }else{ //no mosters in vicinity
+    		 
+    		 actions[10] = 5; //currently don't move
+    		 //want to change to if safe from monsters, move towards creatures or strawberries. 
+    	 }
+    	  
+         //actions[i]=rand.nextFloat();
+         
+    	//Makes the creatures never move 
+    	
       } 
       
       //implement a computational modeel that computes action vector from the 

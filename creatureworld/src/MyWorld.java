@@ -10,8 +10,8 @@ import java.util.*;
 * 
 * Implement fitness evaluation and creation of new generations of creatures 
 *
-* @author  
-* @version 1.0
+* @author  Mika Smith
+* @version 2.0
 * @since   2017-04-05 
 */
 public class MyWorld extends World {
@@ -60,7 +60,7 @@ public class MyWorld extends World {
          chose from: 1, 2, 3.  Refer to the Assignment2 instructions for
          explanation of the three percept formats.
       */
-     int perceptFormat = 2;     
+     int perceptFormat = 1;     
      
      // Instantiate MyWorld object.  The rest of the application is driven
      // from the window that will be displayed.
