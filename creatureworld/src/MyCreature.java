@@ -19,9 +19,9 @@ public class MyCreature extends Creature {
   Random rand = new Random();
     private final int numPercepts;
     private final int numActions;
-    private int[] percepts;
-    private int[] actions;
-    private int[] chromosome; 
+    static int pID=0;  
+    int parentID=0;
+    
 
   /* Empty constructor - might be a good idea here to put the code that 
    initialises the chromosome to some random state  
@@ -33,11 +33,13 @@ public class MyCreature extends Creature {
           numAction - number of action output vector that creature will need
                       to produce on every turn
   */
-  public MyCreature(int numPercepts, int numActions) {
+  public MyCreature(int numPercepts, int numActions) { //This whole class s its chromosome!
       this.numPercepts = numPercepts;
       this.numActions = numActions;  //expected from the agentfunction
-      percepts = new int[numPercepts];
-      actions = new int[numActions];
+      pID++; 
+      parentID = pID; //way to uniquelly identify a creature 
+      
+      //chromosome encoding goes here 
   }
   
   /* This function must be overridden by MyCreature, because it implements
@@ -51,9 +53,14 @@ public class MyCreature extends Creature {
             numExpectedAction - this number tells you what the expected size
                                 of the returned array of percepts should bes -11
      Returns: an array of actions 
+     
+     
+     
   */
-  @Override
+  @Override 
   public float[] AgentFunction(int[] percepts, int numPercepts, int numExpectedActions) {
+	//need to compute action vector from percept vector. Parametrised by the chromosome, so that when  
+	 //the chromosome values change, the computation changes.  
       
       // This is where your chromosome gives rise to the model that maps
       // percepts to actions.  This function governs your creature's behaviour.
@@ -63,19 +70,44 @@ public class MyCreature extends Creature {
       // At the moment, the actions are chosen completely at random, ignoring
       // the percepts.  You need to replace this code.
       float actions[] = new float[numExpectedActions];
+      int moveDirection;
+      Boolean eat; 
       for(int i=0;i<numExpectedActions;i++) {
     	  //setting to arbitrary values, though could be used as priority as the action with
-    	  //the largest value will be executed 
+    	  //the largest value will be executed.
+    	  
+    	  //Note: more than one percept could be set! 
+    	  
+    	  //use a choose random action function. 
     	 if(percepts[7]==1){ //on red strawberry 
-    		 actions[9] = 10;   //eat the strawberry
-    	 }else if(percepts[0]==1 || percepts[1]==1){ //monsters in vicinity 
-    		 int moveDirection = rand.nextInt(10);
-    		 System.out.println("Avoided!");
-    		 actions[moveDirection] = 7; 
+    		 actions[9] = 10;   //ALWAYS eat the strawberry
+    	 }else if(percepts[6]==1){ //on green strawberry, 
+    		 eat = rand.nextBoolean(); //randomly, either eat or dont 
     		 
+    		 if(eat){ //eventually want this to be based on energy! 
+    			 actions[9] = 10; 
+    			// System.out.println("Chose to eat");
+    		 }else{
+    			 //System.out.println("Ew gross no thanks");
+    		 }
+    	 }else if(percepts[0]==1){ //monsters in vicinity  - should be priority! 
+    		 moveDirection = rand.nextInt(10); 
+    		// System.out.println("Avoided! direction 1" );
+    		 actions[moveDirection] = 10; 
+    	 }else if(percepts[1]==1){ //monsters in other vicinity 
+    		 moveDirection = rand.nextInt(10); 
+    		// System.out.println("Avoided! direction 2" );
+    		 actions[moveDirection] = 10; 
     	 }else{ //no mosters in vicinity
-    		 
-    		 actions[10] = 5; //currently don't move
+    		 if(percepts[4]==1){
+    			moveDirection = rand.nextInt(7); //there is food, move towards  
+    			actions[moveDirection] = 10; 
+    		 }
+    		 if(percepts[5]==1){
+    			 moveDirection = rand.nextInt(7); //there is food, move towards  
+     			 actions[moveDirection] = 10; 
+    	     }
+    		 actions[10] = 5; //currently do random movement  
     		 //want to change to if safe from monsters, move towards creatures or strawberries. 
     	 }
     	  
@@ -92,5 +124,6 @@ public class MyCreature extends Creature {
       return actions; //return array of actions. The index of the largest value
       //element in the action array will be taken as the desired action. 
   }
+  
   
 }

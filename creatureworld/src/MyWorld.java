@@ -22,9 +22,7 @@ public class MyWorld extends World {
   */
   private final int _numTurns = 100;
   private final int _numGenerations = 500;
-  
 
-  
   /* Constructor.  
    
      Input: griSize - the size of the world
@@ -37,12 +35,9 @@ public class MyWorld extends World {
   public MyWorld(int gridSize, int windowWidth, int windowHeight, boolean repeatableMode, int perceptFormat) {   
       // Initialise the parent class - don't remove this
       super(gridSize, windowWidth,  windowHeight, repeatableMode, perceptFormat);
-
       // Set the number of turns and generations
       this.setNumTurns(_numTurns);
-      this.setNumGenerations(_numGenerations);
-      
-      
+      this.setNumGenerations(_numGenerations); 
   }
  
   /* The main function for the MyWorld application
@@ -100,9 +95,47 @@ public class MyWorld extends World {
     return population;
   }
   
+  public int calculateFitness(int energy, Boolean dead){
+	  if(!dead) return 10; //If they survived, give them maximum value 
+	  return energy/10; //if not, set their fitness as their energy from 1 to 10 
+  }
+  
+  
+  //pass in map of calculated fitnesses to creature. Find two creatures with maximal fitnesses and breed
+  public MyCreature parentSelection(HashMap<MyCreature, Integer> fitnessMap){
+	/*Testing its entering the hashmap   
+	  for(Map.Entry<MyCreature, Integer> entry : fitnessMap.entrySet()){
+		  System.out.println(entry.getKey().getEnergy() + " " + entry.getValue());
+	  }
+	  */
+	  int max = 0; 
+	  ArrayList<MyCreature> fitCandidates = new ArrayList<MyCreature>();
+	  for(Map.Entry<MyCreature, Integer> entry : fitnessMap.entrySet()){
+		  int currentFitness = entry.getValue(); 
+		  if(currentFitness >= max){
+			  if(currentFitness > max){
+				  max = currentFitness;
+				  fitCandidates.clear(); 
+			  }
+			  fitCandidates.add(entry.getKey());
+		  }
+	  }
+	  System.out.println("Max is "+ max);
+	  int candIndex = rand.nextInt(fitCandidates.size());
+	  MyCreature candidate = fitCandidates.get(candIndex);
+	  fitCandidates.remove(candidate); //does this alter the global hashmap? 
+	  return candidate;  
+	  
+	  
+	 /* for(MyCreature candidate : fitCandidates){
+		  System.out.println(candidate.getEnergy());
+		  //remove and return one randomly !  
+	  }*/
+  }
+  
   /* The MyWorld class must override this function, which is
      used to fetch the next generation of the creatures.  This World will
-     proivde you with the old_generation of creatures, from which you can
+     provide you with the old_generation of creatures, from which you can
      extract information relating to how they did in the previous simulation...
      and use them as parents for the new generation.
   
@@ -126,6 +159,8 @@ public class MyWorld extends World {
      MyCreature[] old_population = (MyCreature[]) old_population_btc;
      // Create a new array for the new population
      MyCreature[] new_population = new MyCreature[numCreatures];
+     int[] fitnesses = new int[numCreatures];
+     HashMap<MyCreature, Integer> creatureFitnessMap = new HashMap<MyCreature, Integer>(); 
      
      // Here is how you can get information about old creatures and how
      // well they did in the simulation
@@ -138,16 +173,24 @@ public class MyWorld extends World {
      //guide the GA in selection of parents for the next generation. 
      float avgLifeTime=0f;
      int nSurvivors = 0;
+     int fitCount = 0; 
      for(MyCreature creature : old_population) {
         // The energy of the creature.  This is zero if creature starved to
-        // death, non-negative oterhwise.  If this number is zero, but the 
+        // death, non-negative otherwise.  If this number is zero, but the 
         // creature is dead, then this number gives the enrgy of the creature
         // at the time of death.
         int energy = creature.getEnergy();
+      //  System.out.println("Creature's energy"+energy);
 
-        // This querry can tell you if the creature died during simulation
+        // This query can tell you if the creature died during simulation
         // or not.  
         boolean dead = creature.isDead();
+
+        int fitness = calculateFitness(energy, dead); 
+        fitnesses[fitCount] = fitness;  //store in hashtable due to keyvalue pair 
+        creatureFitnessMap.put(creature, fitness); 
+        fitCount++; 
+        //System.out.println(fitness);
         
         if(dead) {
            // If the creature died during simulation, you can determine
@@ -159,6 +202,11 @@ public class MyWorld extends World {
            avgLifeTime += (float) _numTurns;
         }
      }
+     
+     MyCreature parent1 = parentSelection(creatureFitnessMap); 
+     MyCreature parent2 = parentSelection(creatureFitnessMap); 
+     System.out.println("Parent 1: " + parent1.parentID);
+     System.out.println("Parent 2: " + parent2.parentID);
      
      //crossover, add random mutation to the chromosome. 
      //print average fitness of all creatures and plot this over generations. 
