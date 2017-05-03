@@ -11,7 +11,7 @@ import java.util.Random;
 * AgentFunction. Implement creature behaviour. 
 *
 * @author  Mika Smith 
-* @version 2.0
+* @version 3.0
 * @since   2017-04-05 
 */
 public class MyCreature extends Creature {
@@ -22,7 +22,7 @@ public class MyCreature extends Creature {
     private final int numActions;
     static int pID=0;  
     int parentID=0;
-    private int[] chromosome; 
+    public int[] chromosome; 
     public HashMap<String, Integer> directionMap = new HashMap<String, Integer>()
     {{
 	    put("000", 0);
@@ -72,14 +72,16 @@ public class MyCreature extends Creature {
 	      //eat green strawberries or not 
       //
   }
+  
+  //Finds the gene for direction - 3 bits, 8 possible values (8 possible directions) 
   public String findGene(int a, int b, int c){
 	  StringBuilder gene = new StringBuilder();
 	  gene.append(a);
 	  gene.append(b);
 	  gene.append(c);
 	  return gene.toString();
-	  
   }
+  
   //pass in a gene encoding movement behaviour, need to look it up and return the associated action
   public int findDirection(String gene){ //have a bool value opposite? 
 	  return directionMap.get(gene); 
@@ -141,12 +143,15 @@ public class MyCreature extends Creature {
     	//		 System.out.println(parentID + " said ew gross no thanks");
     		 }
     	 }else if(percepts[0]==1){ //monsters in vicinity  - should be priority! 
+    		 
+    		 
     		// System.out.println("Avoided! direction 1" );
     		 moveDirection = findDirection(avoidance);
     		// System.out.println("Moving in direction " + moveDirection);
     		 actions[moveDirection] = 10; //0 to 7 inclusive for movement in some direction 
     	 }else if(percepts[1]==1){ //monsters in other vicinity 
     		 moveDirection = findDirection(avoidance);  //move in opposite direction 
+    		 //no way to know what opposite is! set to same direction for now. 
     		// System.out.println("Avoided! direction 2" );
     		 actions[moveDirection] = 10; 
     	 }else{ //no mosters in vicinity

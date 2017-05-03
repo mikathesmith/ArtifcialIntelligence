@@ -11,7 +11,7 @@ import java.util.*;
 * Implement fitness evaluation and creation of new generations of creatures 
 *
 * @author  Mika Smith
-* @version 2.0
+* @version 3.0
 * @since   2017-04-05 
 */
 public class MyWorld extends World {
@@ -101,7 +101,9 @@ public class MyWorld extends World {
   }
   
   
-  //pass in map of calculated fitnesses to creature. Find two creatures with maximal fitnesses and breed
+  //pass in map of calculated fitnesses to creature. 
+  //Find two creatures with maximal fitnesses and breed
+  //need to update so that we are using roulette wheel or tournament selection!  
   public MyCreature parentSelection(HashMap<MyCreature, Integer> creatureFitnessMap){
 	/*Testing its entering the hashmap   
 	  for(Map.Entry<MyCreature, Integer> entry : creatureFitnessMap.entrySet()){
@@ -120,7 +122,7 @@ public class MyWorld extends World {
 			  fitCandidates.add(entry.getKey());
 		  }
 	  }
-	  System.out.println("Max is "+ max);
+	//  System.out.println("Max is "+ max);
 	  int candIndex = rand.nextInt(fitCandidates.size());
 	  MyCreature candidate = fitCandidates.get(candIndex);
 	  creatureFitnessMap.remove(candidate); //does this alter the global hashmap? 
@@ -130,12 +132,47 @@ public class MyWorld extends World {
   //Takes two chromosomes and returns a new one by crossing them over 
   public MyCreature crossOver(MyCreature p1, MyCreature p2){
 	  //set crossover point. 
-	  int crossoverIndex = 5; //make this the mid point, number of genes/2  
+	  int numPercepts = this.expectedNumberofPercepts();
+	  int numActions = this.expectedNumberofActions();
+	  
+	  int crossoverIndex = p1.chromosome.length/2; //make this the mid point, number of genes/2  
 	  //find out how to access values in chromosome; 
 	 // MyCreature offspring;
+	  int[] offspringChromosome = new int[p1.chromosome.length];
+	  for(int i=0; i < crossoverIndex; i++){
+		  offspringChromosome[i] = p1.chromosome[i];
+	  }
+	  for(int i= crossoverIndex; i < p1.chromosome.length ;i++){
+		  offspringChromosome[i] = p2.chromosome[i];
+	  }
+	//  System.out.println("Crossover point: "+ crossoverIndex);
 	  
+	/*  System.out.print("Parent 1:  ");
+	  for(int i : p1.chromosome){
+		  System.out.print(i);
+	  }
+	  System.out.println();
 	  
-	  return null;
+	  System.out.print("Parent 2:  ");
+	  for(int i : p2.chromosome){
+		  System.out.print(i);
+	  }
+	  System.out.println();
+	  
+	  System.out.print("Offspring: ");
+	  for(int i : offspringChromosome){
+		  System.out.print(i);
+	  }
+	  System.out.println();*/ 
+
+	  //append index 0 to crossoverIndex to offSpringChromosome. 
+	  
+	  //append crossoverIndex to chromosome.length-1 to offSpringChromosome
+	  
+	  MyCreature offspring = new MyCreature(numPercepts, numActions);
+	  offspring.chromosome = offspringChromosome;
+	  return offspring; 
+	  //return null;
   }
   
   /* The MyWorld class must override this function, which is
@@ -166,6 +203,7 @@ public class MyWorld extends World {
      MyCreature[] new_population = new MyCreature[numCreatures];
    //  int[] fitnesses = new int[numCreatures];
      HashMap<MyCreature, Integer> creatureFitnessMap = new HashMap<MyCreature, Integer>(); 
+     
 
      // Here is how you can get information about old creatures and how
      // well they did in the simulation
@@ -213,11 +251,28 @@ public class MyWorld extends World {
      //move to below for loop, add offspring to new_population in ith position  
      MyCreature parent1 = parentSelection(creatureFitnessMap); 
      MyCreature parent2 = parentSelection(creatureFitnessMap);
-     System.out.println("Parent 1: " + parent1.parentID + " Energy at death: " + parent1.getEnergy());
-     System.out.println("Parent 2: " + parent2.parentID + " Energy at death: " + parent2.getEnergy());
+   //  System.out.println("Parent 1: " + parent1.parentID + " Energy at death: " + parent1.getEnergy());
+     //System.out.println("Parent 2: " + parent2.parentID + " Energy at death: " + parent2.getEnergy());
      
-   //  MyCreature offspring = crossOver(parent1, parent2);
-     
+     MyCreature offspring = crossOver(parent1, parent2);
+  //   System.out.println("Offspring: " + offspring.parentID + "Genotype: " + offspring.chromosome);  
+     System.out.print("Parent 1:  " + parent1.parentID + " Genotype: ");
+	  for(int i : parent1.chromosome){
+		  System.out.print(i);
+	  }
+	  System.out.println();
+	  
+	  System.out.print("Parent 2:  " + parent2.parentID + " Genotype: ");
+	  for(int i : parent2.chromosome){
+		  System.out.print(i);
+	  }
+	  System.out.println();
+	  
+	  System.out.print("Offspring: " + offspring.parentID + " Genotype: ");
+	  for(int i : offspring.chromosome){
+		  System.out.print(i);
+	  }
+	  System.out.println();
      //crossover, add random mutation to the chromosome. 
      //print average fitness of all creatures and plot this over generations. 
 
