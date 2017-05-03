@@ -20,8 +20,8 @@ public class MyCreature extends Creature {
   Random rand = new Random();
     private final int numPercepts;
     private final int numActions;
-    static int pID=0;  
-    int parentID=0;
+    static int cID=0;  
+    int creatureID=0;
     public int[] chromosome; 
     public HashMap<String, Integer> directionMap = new HashMap<String, Integer>()
     {{
@@ -33,6 +33,15 @@ public class MyCreature extends Creature {
 	    put("101", 5);
 	    put("110", 6);
 	    put("111", 7);
+    	/*put("-10", 0);
+	    put("10", 1);
+	    put("01", 2);
+	    put("-11", 3);
+	    put("11", 4);
+	    put("0-1", 5);
+	    put("-1-1", 6);
+	    put("1-1", 7);
+	    put("00", 8); //don't move?? */
     }};
     
     
@@ -50,8 +59,8 @@ public class MyCreature extends Creature {
   public MyCreature(int numPercepts, int numActions) { //This whole class s its chromosome!
       this.numPercepts = numPercepts;
       this.numActions = numActions;  //expected from the agentfunction
-      pID++; 
-      parentID = pID; //way to uniquelly identify a creature 
+      cID++; 
+      creatureID = cID; //way to uniquelly identify a creature 
       chromosome = new int[7];
       //Index 0 = eat green stawberry or not
       //Index 1, 2, 3 = avoidance behaviour if x1, opposite behaviour if x2, or if both? 
@@ -74,17 +83,38 @@ public class MyCreature extends Creature {
   }
   
   //Finds the gene for direction - 3 bits, 8 possible values (8 possible directions) 
-  public String findGene(int a, int b, int c){
+  public StringBuilder findGene(int a, int b, int c){
 	  StringBuilder gene = new StringBuilder();
 	  gene.append(a);
 	  gene.append(b);
 	  gene.append(c);
-	  return gene.toString();
+	  return gene;
   }
   
   //pass in a gene encoding movement behaviour, need to look it up and return the associated action
-  public int findDirection(String gene){ //have a bool value opposite? 
-	  return directionMap.get(gene); 
+  public int findDirection(StringBuilder gene, Boolean flip, int bitToFlip){ //have a bool value opposite? 
+	 if(flip){
+		 //else replace character at bitToFlip position in gene, then get the new gene value
+	     //does get value, need to convert -1,0,1 
+	//	 System.out.print("Old gene: "+ gene.toString() + " Flipping at: " + bitToFlip);
+		 int toFlip = Character.getNumericValue(gene.charAt(bitToFlip+1));
+		 toFlip ^= 1; 
+		 //or just make and return a whole new string? 
+		 StringBuilder flipString = new StringBuilder(); 
+		 flipString.append(toFlip);
+		 gene.setCharAt(bitToFlip+1, flipString.charAt(0)); //need toFlip to be its literal character
+		 //bit manipulation to flip bit 
+		// System.out.print(" New gene: "+ gene.toString());
+		// System.out.println(); 
+	 }
+	 return directionMap.get(gene.toString()); 
+  }
+  
+  public String findLocation(int a, int b){
+	  StringBuilder location = new StringBuilder();
+	  location.append(a);
+	  location.append(b);
+	  return location.toString();
   }
   
   /* This function must be overridden by MyCreature, because it implements
@@ -118,8 +148,9 @@ public class MyCreature extends Creature {
       float actions[] = new float[numExpectedActions];
       int moveDirection;
       Boolean eat= (chromosome[0]==1) ? true : false;
-      String avoidance = findGene(chromosome[1], chromosome[2], chromosome[3]);
-	  String attraction = findGene(chromosome[4], chromosome[5], chromosome[6]);
+      Boolean flipBit; 
+      StringBuilder avoidance = findGene(chromosome[1], chromosome[2], chromosome[3]);
+	  StringBuilder attraction = findGene(chromosome[4], chromosome[5], chromosome[6]);
       
       //the random values must be changed so they are based on the parameters of a
       //given creature's chromosome. 
@@ -133,7 +164,7 @@ public class MyCreature extends Creature {
   
     	  //use a choose random action function. 
     	 if(percepts[7]==1){ //on red strawberry 
-    		 actions[9] = 10;   //ALWAYS eat the strawberry
+    		 actions[9] = 10;   //ALWAYS eat the strawberry regardless of chromosome - should it be?
     	 }else if(percepts[6]==1){ //on green strawberry, 
     		 //eat = rand.nextBoolean(); //randomly, either eat or dont 
     		 if(eat){ //
@@ -142,34 +173,34 @@ public class MyCreature extends Creature {
     		 }else{
     	//		 System.out.println(parentID + " said ew gross no thanks");
     		 }
-    	 }else if(percepts[0]==1){ //monsters in vicinity  - should be priority! 
-    		 
-    		 
-    		// System.out.println("Avoided! direction 1" );
-    		 moveDirection = findDirection(avoidance);
+    	 }else if(percepts[0]!=0 || percepts[1]!=0){ //monsters in vicinity  - should be priority! 
+    	//	 String monsterLocation = findLocation(percepts[0], percepts[1]); //gets the location of monster  		 
+    		 //Do some computation to find a direction to avoid the monster using avoidance gene. 
+    		 flipBit = (percepts[0]==1) ? true : false;  
+    		 moveDirection = findDirection(avoidance, flipBit, percepts[1]);
+
+    		// moveDirection = findDirection(avoidance, monsterLocation);
     		// System.out.println("Moving in direction " + moveDirection);
     		 actions[moveDirection] = 10; //0 to 7 inclusive for movement in some direction 
-    	 }else if(percepts[1]==1){ //monsters in other vicinity 
-    		 moveDirection = findDirection(avoidance);  //move in opposite direction 
-    		 //no way to know what opposite is! set to same direction for now. 
-    		// System.out.println("Avoided! direction 2" );
-    		 actions[moveDirection] = 10; 
+    	
     	 }else{ //no mosters in vicinity
-    		 if(percepts[4]==1){
-    			moveDirection = findDirection(attraction); //there is food, move towards  
+    		
+    		 if(percepts[2]!=0 || percepts[3]!=0){
+    			//String foodLocation = findLocation(percepts[2], percepts[3]);
+    			flipBit = (percepts[0]==2) ? true : false;  
+    			moveDirection = findDirection(attraction, flipBit, percepts[3]); //there is food, move towards  
     			actions[moveDirection] = 10; 
     		 }
-    		 if(percepts[5]==1){
-    			 moveDirection = findDirection(attraction); //there is food, move towards  
+    		 if(percepts[4]!=0 || percepts[5]!=0){
+    			 flipBit = (percepts[0]==4) ? true : false;  
+    		//	 String creatureLocation = findLocation(percepts[4], percepts[5]);
+    			 moveDirection = findDirection(attraction, flipBit, percepts[5]); //there is food, move towards  
      			 actions[moveDirection] = 10; 
     	     }
-    		 actions[10] = 5; //currently do random movement  
-    		 //want to change to if safe from monsters, move towards creatures or strawberries. 
+    		 
+    		 //If everything is 0, do random movements
+    		 actions[10] = 5; //currently do random movement - change to be based on chromosome  
     	 }
-    	  
-         //actions[i]=rand.nextFloat();
-         
-    	//Makes the creatures never move 
     	
       } 
       

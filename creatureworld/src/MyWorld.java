@@ -256,19 +256,19 @@ public class MyWorld extends World {
      
      MyCreature offspring = crossOver(parent1, parent2);
   //   System.out.println("Offspring: " + offspring.parentID + "Genotype: " + offspring.chromosome);  
-     System.out.print("Parent 1:  " + parent1.parentID + " Genotype: ");
+     System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
 	  for(int i : parent1.chromosome){
 		  System.out.print(i);
 	  }
 	  System.out.println();
 	  
-	  System.out.print("Parent 2:  " + parent2.parentID + " Genotype: ");
+	  System.out.print("Parent 2:  " + parent2.creatureID + " Genotype: ");
 	  for(int i : parent2.chromosome){
 		  System.out.print(i);
 	  }
 	  System.out.println();
 	  
-	  System.out.print("Offspring: " + offspring.parentID + " Genotype: ");
+	  System.out.print("Offspring: " + offspring.creatureID + " Genotype: ");
 	  for(int i : offspring.chromosome){
 		  System.out.print(i);
 	  }
