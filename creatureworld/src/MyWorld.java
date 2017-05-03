@@ -1,6 +1,8 @@
 import cosc343.assig2.World;
 import cosc343.assig2.Creature;
 import java.util.*;
+import java.io.*;
+
 
 /**
 * The MyWorld extends the cosc343 assignment 2 World.  Here you can set 
@@ -14,7 +16,55 @@ import java.util.*;
 * @version 3.0
 * @since   2017-04-05 
 */
+
+
+
 public class MyWorld extends World {
+	
+	/*public class FitnessLineChart extends Application {
+		float[] fitnessData;
+		
+		public FitnessLineChart(float[] data){
+			fitnessData = data; 
+		}
+		
+		public void addToChart(Series<Number, Number> series, int generation, float fitness){
+			series.getData().add(new XYChart.Data<Number, Number>(generation, fitness));
+			
+		}
+	 
+	    @Override public void start(Stage stage) {
+	        stage.setTitle("G");
+	        final NumberAxis xAxis = new NumberAxis();
+	        final NumberAxis yAxis = new NumberAxis();
+	        xAxis.setLabel("Generation"); 
+	        yAxis.setLabel("Fitness"); 
+	        
+	        final LineChart<Number,Number> lineChart = 
+	                new LineChart<Number,Number>(xAxis,yAxis);
+	                
+	        lineChart.setTitle("Fitness over 500 Generations");
+	                                
+	        Series<Number, Number> series = new XYChart.Series<Number, Number>();
+	        series.setName("Mika Smith");
+	        
+	     //   for(int i=0; i< fitnessData.length;i++){
+	       // 	addToChart(series, i, fitnessData[i]);
+	        //}
+
+	        
+	        Scene scene  = new Scene(lineChart,800,600);
+	        lineChart.getData().add(series);
+	       // add(series);
+	       
+	        stage.setScene(scene);
+	        stage.show();
+	    }
+	 
+	   public static void main(String[] args) {
+	        launch(args);
+	    }
+	}*/
  
   /* Here you can specify the number of turns in each simulation
    * and the number of generations that the genetic algorithm will 
@@ -22,7 +72,11 @@ public class MyWorld extends World {
   */
   private final int _numTurns = 100;
   private final int _numGenerations = 500;
-
+  private static final String FILENAME = "fitnessdata.txt";
+ // public float[] fitnessData = new float[_numGenerations];
+  public int dataIndex = 1;
+  public static FileWriter fw = null;
+  public static BufferedWriter bw = null; 
   /* Constructor.  
    
      Input: griSize - the size of the world
@@ -51,6 +105,15 @@ public class MyWorld extends World {
      int windowHeight = 900;
      boolean repeatableMode = false;
      
+     
+  //   FitnessLineChart chart = new FitnessLineChart(fitnessData); 
+  
+  //   chart.addToChart(series, generation, fitness);
+ //    FitnessLineChart.launch(args);
+   //  chart.launch(args);
+     
+ 
+    
       /* Here you can specify percept format to use - there are three to
          chose from: 1, 2, 3.  Refer to the Assignment2 instructions for
          explanation of the three percept formats.
@@ -60,6 +123,7 @@ public class MyWorld extends World {
      // Instantiate MyWorld object.  The rest of the application is driven
      // from the window that will be displayed.
      MyWorld sim = new MyWorld(gridSize, windowWidth, windowHeight, repeatableMode, perceptFormat);
+     
   }
   
 
@@ -286,6 +350,31 @@ public class MyWorld extends World {
      System.out.println("  Survivors    : " + nSurvivors + " out of " + numCreatures);
      System.out.println("  Avg life time: " + avgLifeTime + " turns");
      System.out.println("  Avg fitness: " + avgFitness);
+     
+    // fitnessData[dataIndex] = avgFitness;
+     
+     try{
+    	 fw = new FileWriter(FILENAME, true);
+         bw = new BufferedWriter(fw);
+    	 bw.write(dataIndex + " " + Float.toString(avgFitness)+"\n");
+     }catch(IOException e){
+    	 e.printStackTrace();
+     }finally{
+    	 try{
+    		 if (bw != null)
+				bw.close();
+
+			if (fw != null)
+				fw.close();
+
+		}catch (IOException e) {
+
+			e.printStackTrace();
+
+		}
+     }
+     dataIndex++; 
+     
 
      
      // Having some way of measuring the fitness, you should implement a proper
@@ -298,7 +387,7 @@ public class MyWorld extends World {
         new_population[i] = old_population[i];
      }
      
-     
+
      // Return new population of cratures. same number as old population. 
      return new_population;
   }

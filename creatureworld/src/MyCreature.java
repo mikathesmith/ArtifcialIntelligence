@@ -17,7 +17,7 @@ import java.util.Random;
 public class MyCreature extends Creature {
 
   // Random number generator
-  Random rand = new Random();
+	Random rand = new Random();
     private final int numPercepts;
     private final int numActions;
     static int cID=0;  
@@ -29,19 +29,10 @@ public class MyCreature extends Creature {
 	    put("001", 1);
 	    put("010", 2);
 	    put("011", 3);
-	    put("100", 4);
+	    put("100", 8); //action 4 is dont move! should I change this back? 
 	    put("101", 5);
 	    put("110", 6);
-	    put("111", 7);
-    	/*put("-10", 0);
-	    put("10", 1);
-	    put("01", 2);
-	    put("-11", 3);
-	    put("11", 4);
-	    put("0-1", 5);
-	    put("-1-1", 6);
-	    put("1-1", 7);
-	    put("00", 8); //don't move?? */
+	    put("111", 7); 
     }};
     
     
@@ -61,7 +52,7 @@ public class MyCreature extends Creature {
       this.numActions = numActions;  //expected from the agentfunction
       cID++; 
       creatureID = cID; //way to uniquelly identify a creature 
-      chromosome = new int[7];
+      chromosome = new int[8];
       //Index 0 = eat green stawberry or not
       //Index 1, 2, 3 = avoidance behaviour if x1, opposite behaviour if x2, or if both? 
       //Index 4, 5, 6 = attraction behaviour 
@@ -149,60 +140,52 @@ public class MyCreature extends Creature {
       int moveDirection;
       Boolean eat= (chromosome[0]==1) ? true : false;
       Boolean flipBit; 
+      Boolean reactToOthers = (chromosome[7]==1) ? true : false; 
       StringBuilder avoidance = findGene(chromosome[1], chromosome[2], chromosome[3]);
 	  StringBuilder attraction = findGene(chromosome[4], chromosome[5], chromosome[6]);
       
       //the random values must be changed so they are based on the parameters of a
       //given creature's chromosome. 
-      for(int i=0;i<numExpectedActions;i++) { //get rid of loop eventually? 
+      //for(int i=0;i<numExpectedActions;i++) { //get rid of loop eventually? 
     	  //setting to arbitrary values, though could be used as priority as the action with
     	  //the largest value will be executed.
     	  
-    	  //Note: more than one percept could be set! 
-    	  
-    	  //extract chromosome[2-4] as avoidance behaviour
+    	  //Note: more than one percept could be set!  - use priorities 
   
-    	  //use a choose random action function. 
-    	 if(percepts[7]==1){ //on red strawberry 
-    		 actions[9] = 10;   //ALWAYS eat the strawberry regardless of chromosome - should it be?
-    	 }else if(percepts[6]==1){ //on green strawberry, 
-    		 //eat = rand.nextBoolean(); //randomly, either eat or dont 
-    		 if(eat){ //
-    			 actions[9] = 10; 
-    	//		 System.out.println(parentID + " chose to eat");
-    		 }else{
-    	//		 System.out.println(parentID + " said ew gross no thanks");
-    		 }
-    	 }else if(percepts[0]!=0 || percepts[1]!=0){ //monsters in vicinity  - should be priority! 
-    	//	 String monsterLocation = findLocation(percepts[0], percepts[1]); //gets the location of monster  		 
-    		 //Do some computation to find a direction to avoid the monster using avoidance gene. 
-    		 flipBit = (percepts[0]==1) ? true : false;  
-    		 moveDirection = findDirection(avoidance, flipBit, percepts[1]);
+	 if(percepts[7]==1){ //on red strawberry 
+		 actions[9] = 10;   //ALWAYS eat the strawberry regardless of chromosome - should it be?
+	 }else if(eat && percepts[6]==1){ //on green strawberry, 
+		 actions[9] = 10; 
+	 }else if(percepts[0]!=0 || percepts[1]!=0){ //monsters in vicinity  - should be priority! 
+	//	 String monsterLocation = findLocation(percepts[0], percepts[1]); //gets the location of monster  		 
+		 //Do some computation to find a direction to avoid the monster using avoidance gene. 
+		 flipBit = (percepts[0]==1) ? true : false;  
+		 moveDirection = findDirection(avoidance, flipBit, percepts[1]);
 
-    		// moveDirection = findDirection(avoidance, monsterLocation);
-    		// System.out.println("Moving in direction " + moveDirection);
-    		 actions[moveDirection] = 10; //0 to 7 inclusive for movement in some direction 
-    	
-    	 }else{ //no mosters in vicinity
-    		
-    		 if(percepts[2]!=0 || percepts[3]!=0){
+		// moveDirection = findDirection(avoidance, monsterLocation);
+		// System.out.println("Moving in direction " + moveDirection);
+		 actions[moveDirection] = 10; //0 to 7 inclusive for movement in some direction 
+	
+	 }else{ //no monsters in vicinity
+		if(reactToOthers && (percepts[2]!=0 || percepts[3]!=0)){
     			//String foodLocation = findLocation(percepts[2], percepts[3]);
-    			flipBit = (percepts[0]==2) ? true : false;  
-    			moveDirection = findDirection(attraction, flipBit, percepts[3]); //there is food, move towards  
+    			flipBit = (percepts[2]==1) ? true : false;  
+    			moveDirection = findDirection(attraction, flipBit, percepts[3]); //move in some direction in response to creature  
     			actions[moveDirection] = 10; 
-    		 }
-    		 if(percepts[4]!=0 || percepts[5]!=0){
-    			 flipBit = (percepts[0]==4) ? true : false;  
-    		//	 String creatureLocation = findLocation(percepts[4], percepts[5]);
-    			 moveDirection = findDirection(attraction, flipBit, percepts[5]); //there is food, move towards  
-     			 actions[moveDirection] = 10; 
-    	     }
     		 
-    		 //If everything is 0, do random movements
-    		 actions[10] = 5; //currently do random movement - change to be based on chromosome  
-    	 }
+		}
+		 if(percepts[4]!=0 || percepts[5]!=0){ //location of food  - reactToFood variable? 
+  			 flipBit = (percepts[4]==1) ? true : false;  
+		//	 String creatureLocation = findLocation(percepts[4], percepts[5]);
+			 moveDirection = findDirection(attraction, flipBit, percepts[5]); //there is food, move towards  
+ 			 actions[moveDirection] = 10; 
+	     }
+		 
+		 //If everything is 0, do random movements
+		 actions[10] = 5; //currently do random movement - change to be based on chromosome  
+	 }
     	
-      } 
+      
       
       //implement a computational modeel that computes action vector from the 
       //percept vector. This model should be parametrised by the chromosome,
