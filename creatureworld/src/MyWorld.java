@@ -21,57 +21,13 @@ import java.io.*;
 
 public class MyWorld extends World {
 	
-	/*public class FitnessLineChart extends Application {
-		float[] fitnessData;
-		
-		public FitnessLineChart(float[] data){
-			fitnessData = data; 
-		}
-		
-		public void addToChart(Series<Number, Number> series, int generation, float fitness){
-			series.getData().add(new XYChart.Data<Number, Number>(generation, fitness));
-			
-		}
-	 
-	    @Override public void start(Stage stage) {
-	        stage.setTitle("G");
-	        final NumberAxis xAxis = new NumberAxis();
-	        final NumberAxis yAxis = new NumberAxis();
-	        xAxis.setLabel("Generation"); 
-	        yAxis.setLabel("Fitness"); 
-	        
-	        final LineChart<Number,Number> lineChart = 
-	                new LineChart<Number,Number>(xAxis,yAxis);
-	                
-	        lineChart.setTitle("Fitness over 500 Generations");
-	                                
-	        Series<Number, Number> series = new XYChart.Series<Number, Number>();
-	        series.setName("Mika Smith");
-	        
-	     //   for(int i=0; i< fitnessData.length;i++){
-	       // 	addToChart(series, i, fitnessData[i]);
-	        //}
-
-	        
-	        Scene scene  = new Scene(lineChart,800,600);
-	        lineChart.getData().add(series);
-	       // add(series);
-	       
-	        stage.setScene(scene);
-	        stage.show();
-	    }
-	 
-	   public static void main(String[] args) {
-	        launch(args);
-	    }
-	}*/
  
   /* Here you can specify the number of turns in each simulation
    * and the number of generations that the genetic algorithm will 
    * execute.
   */
   private final int _numTurns = 100;
-  private final int _numGenerations = 500;
+  private final int _numGenerations = 1000;
   private static final String FILENAME = "fitnessdata.txt";
  // public float[] fitnessData = new float[_numGenerations];
   public int dataIndex = 1;
@@ -104,13 +60,6 @@ public class MyWorld extends World {
      int windowWidth =  1600;
      int windowHeight = 900;
      boolean repeatableMode = false;
-     
-     
-  //   FitnessLineChart chart = new FitnessLineChart(fitnessData); 
-  
-  //   chart.addToChart(series, generation, fitness);
- //    FitnessLineChart.launch(args);
-   //  chart.launch(args);
      
  
     
