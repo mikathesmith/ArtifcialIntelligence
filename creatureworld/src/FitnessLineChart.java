@@ -11,6 +11,19 @@ import javafx.stage.Stage;
 //import static thorwin.math.Math.polyfit;
 //import static thorwin.math.Math.polynomial;
  
+/**
+* The FitnessLineChart class extends the JavaFX LineChart Application Class. 
+* 
+* Produce a line chart plotting the data from MyWorld after the evolution has 
+* been inducted. Plot the fitness of creatures over generations.  
+* 
+* Note: Must delete old fitnessdata.txt everytime you want to run a new round 
+*
+* @author  Mika Smith 
+* @version 4.0
+* @since   2017-04-05 
+*/
+
 public class FitnessLineChart extends Application {
 	private static final String FILENAME = "fitnessdata.txt";
 	
@@ -28,8 +41,10 @@ public class FitnessLineChart extends Application {
           yAxis.setLabel("Average Fitness"); 
           
           //Manually set lower and upper bounds for fitness on the y axis
-          yAxis.setLowerBound(1); //1.5
-          yAxis.setUpperBound(8);//5.5
+         // yAxis.setLowerBound(1); 
+          //yAxis.setUpperBound(8);
+          yAxis.setLowerBound(30); 
+          yAxis.setUpperBound(60);
           yAxis.setAutoRanging(false);
           
           //Create the line chart 
@@ -90,8 +105,8 @@ public class FitnessLineChart extends Application {
 	    
 	    	
 	      //Add our series data to the linechart 
-        lineChart.getData().add(series); //Average fitness
-   //     lineChart2.getData().add(series2); //Average lifetime
+      //  lineChart.getData().add(series); //Average fitness
+        lineChart.getData().add(series2); //Average lifetime
        
         //Add linechart to window
         stage.setScene(scene);

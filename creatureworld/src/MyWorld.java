@@ -13,11 +13,9 @@ import java.io.*;
 * Implement fitness evaluation and creation of new generations of creatures 
 *
 * @author  Mika Smith
-* @version 3.0
+* @version 4.0
 * @since   2017-04-05 
 */
-
-
 
 public class MyWorld extends World {
 	
@@ -27,15 +25,18 @@ public class MyWorld extends World {
    * execute.
   */
   private final int _numTurns = 100;
-  private final int _numGenerations = 500;
+  private final int _numGenerations = 1000;
+  
+  //The name of the file to write the fitness data to to produce a graph from 
   private static final String FILENAME = "fitnessdata.txt";
- // public float[] fitnessData = new float[_numGenerations];
-  public int dataIndex = 1;
+  public int genIndex = 1; //keeps the index of the generations. 
   public static FileWriter fw = null;
   public static BufferedWriter bw = null; 
+  public Random rand = new Random(); 
+  
   /* Constructor.  
    
-     Input: griSize - the size of the world
+     Input: gridSize - the size of the world
             windowWidth - the width (in pixels) of the visualisation window
             windowHeight - the height (in pixels) of the visualisation window
             repeatableMode - if set to true, every simulation in each
@@ -54,19 +55,10 @@ public class MyWorld extends World {
 
   */
   public static void main(String[] args) {
-     // Here you can specify the grid size, window size and whether torun
-     // in repeatable mode or not
      int gridSize = 24;
      int windowWidth =  1600;
      int windowHeight = 900;
      boolean repeatableMode = false;
-     
- 
-    
-      /* Here you can specify percept format to use - there are three to
-         chose from: 1, 2, 3.  Refer to the Assignment2 instructions for
-         explanation of the three percept formats.
-      */
      int perceptFormat = 1;     
      
      // Instantiate MyWorld object.  The rest of the application is driven
@@ -108,25 +100,30 @@ public class MyWorld extends World {
     return population;
   }
   
-  public int calculateFitness(int energy, Boolean dead){
+  public double calculateFitness(int energy, Boolean dead){
 	  if(!dead) return 15; //If they survived, give them maximum value 
-	  return energy/10; //if not, set their fitness as their energy from 1 to 10 
+	  double fitness = (double)energy/10; //if not, set their fitness as their energy from 1 to 10 
+	//  System.out.println(energy + " " + fitness);
+	  return fitness;
   }
-  
   
   //pass in map of calculated fitnesses to creature. 
   //Find two creatures with maximal fitnesses and breed
   //need to update so that we are using roulette wheel or tournament selection!  
-  public MyCreature parentSelection(HashMap<MyCreature, Integer> creatureFitnessMap){
+  public MyCreature parentSelection(HashMap<MyCreature, Double> creatureFitnessMap){
 	/*Testing its entering the hashmap   
 	  for(Map.Entry<MyCreature, Integer> entry : creatureFitnessMap.entrySet()){
 		  System.out.println(entry.getKey().getEnergy() + " " + entry.getValue());
 	  }
 	  */
-	  int max = 0; 
+	  
+	  //Is there a better way to do this!! Takes in the ENTIRE map of creatures and their fitnesses. 
+	  
+	  //Choose a subset to iterate! 
+	  double max = 0;
 	  ArrayList<MyCreature> fitCandidates = new ArrayList<MyCreature>();
-	  for(Map.Entry<MyCreature, Integer> entry : creatureFitnessMap.entrySet()){
-		  int currentFitness = entry.getValue(); 
+	  for(Map.Entry<MyCreature, Double> entry : creatureFitnessMap.entrySet()){
+		  double currentFitness = entry.getValue(); 
 		  if(currentFitness >= max){
 			  if(currentFitness > max){
 				  max = currentFitness;
@@ -135,10 +132,9 @@ public class MyWorld extends World {
 			  fitCandidates.add(entry.getKey());
 		  }
 	  }
-	//  System.out.println("Max is "+ max);
-	  int candIndex = rand.nextInt(fitCandidates.size()); //error here! choosing number between 0 and 0 when there is only one entry! 
+	  int candIndex = rand.nextInt(fitCandidates.size()); 
 	  MyCreature candidate = fitCandidates.get(candIndex);
-	  creatureFitnessMap.remove(candidate); //does this alter the global hashmap? 
+	  creatureFitnessMap.remove(candidate); 
 	  return candidate;  
   }
   
@@ -148,47 +144,40 @@ public class MyWorld extends World {
 	  int numPercepts = this.expectedNumberofPercepts();
 	  int numActions = this.expectedNumberofActions();
 	  
-	  int crossoverIndex = p1.chromosome.length/2; //make this the mid point, number of genes/2  
-	  //find out how to access values in chromosome; ()
-	 // MyCreature offspring;
+	  //This is the midpoint of the chromosome. Should this be a random point? 
+	  int crossoverIndex = p1.chromosome.length/2;
 	  MyCreature offspring = new MyCreature(numPercepts, numActions);
-	  int[] offspringChromosome = new int[p1.chromosome.length];
+	  
+	  //Replace offspring's random chromosome with half of p1 and half of p2 at the crossover point. 
 	  for(int i=0; i < crossoverIndex; i++){
-		  System.out.println(chromosome[i];
 		  offspring.chromosome[i] = p1.chromosome[i];
 	  }
 	  for(int i= crossoverIndex; i < p1.chromosome.length ;i++){
 		  offspring.chromosome[i] = p2.chromosome[i];
 	  }
-	//  System.out.println("Crossover point: "+ crossoverIndex);
 	  
-	/*  System.out.print("Parent 1:  ");
-	  for(int i : p1.chromosome){
-		  System.out.print(i);
+	  //With some probability, call mutation 
+	  double probMutate = rand.nextDouble();
+	  if(probMutate < 0.01){ //Change this prob? 
+		  for(int x : offspring.chromosome){
+	   		  System.out.print(x);
+	   	  }
+		  offspring = mutation(offspring);
+		  System.out.println("I've been mutated!");
+		  for(int x : offspring.chromosome){
+	   		  System.out.print(x);
+	   	  }
 	  }
-	  System.out.println();
-	  
-	  System.out.print("Parent 2:  ");
-	  for(int i : p2.chromosome){
-		  System.out.print(i);
-	  }
-	  System.out.println();
-	  
-	  System.out.print("Offspring: ");
-	  for(int i : offspringChromosome){
-		  System.out.print(i);
-	  }
-	  System.out.println();*/ 
-
-	  //append index 0 to crossoverIndex to offSpringChromosome. 
-	  
-	  //append crossoverIndex to chromosome.length-1 to offSpringChromosome
-	  
-	  
-	 // offspring.chromosome = offspringChromosome;
-	 
 	  return offspring; 
-	  //return null;
+  }
+  
+  //Mutates with some random probability by flipping a random bit
+  public MyCreature mutation(MyCreature child){
+	  int flipBitIndex = rand.nextInt(8); //make sure we're not missing one! 
+	  int bitToFlip = child.chromosome[flipBitIndex]; 
+	  bitToFlip ^= 1;  //Inverts bit 
+	  child.chromosome[flipBitIndex] = bitToFlip;
+	  return child;   
   }
   
   /* The MyWorld class must override this function, which is
@@ -213,50 +202,25 @@ public class MyWorld extends World {
   */  
   @Override //called in the evolution phase. 
   public MyCreature[] nextGeneration(Creature[] old_population_btc, int numCreatures) {
-    // Typcast old_population of Creatures to array of MyCreatures
+    // Typcast old_population of Creatures to array of MyCreatures - is this always the ORIGINAL population?
      MyCreature[] old_population = (MyCreature[]) old_population_btc;
      // Create a new array for the new population
      MyCreature[] new_population = new MyCreature[numCreatures];
-   //  int[] fitnesses = new int[numCreatures];
-     HashMap<MyCreature, Integer> creatureFitnessMap = new HashMap<MyCreature, Integer>(); 
      
+     HashMap<MyCreature,Double> creatureFitnessMap = new HashMap<MyCreature, Double>(); 
 
-     // Here is how you can get information about old creatures and how
-     // well they did in the simulation
-     //query the state of every creature by executing various methods that 
-     //MyCreature inherits from its parent class. 
-     //energy is only 0 when creature starves to death. Energy value will be 
-     //taken at the time the creature ran into a monster. 
-     
-     //use this info to compute a fitness score for every creature. This should
-     //guide the GA in selection of parents for the next generation. 
      float avgLifeTime=0f;
      int nSurvivors = 0;
-   //  int fitCount = 0; 
      float avgFitness =0f; 
+     
      for(MyCreature creature : old_population) {
-        // The energy of the creature.  This is zero if creature starved to
-        // death, non-negative otherwise.  If this number is zero, but the 
-        // creature is dead, then this number gives the enrgy of the creature
-        // at the time of death.
         int energy = creature.getEnergy();
-      //  System.out.println("Creature's energy"+energy);
-
-        // This query can tell you if the creature died during simulation
-        // or not.  
         boolean dead = creature.isDead();
-
-        int fitness = calculateFitness(energy, dead); 
-      //  fitnesses[fitCount] = fitness;  //store in hashtable due to keyvalue pair 
+        double fitness = calculateFitness(energy, dead); 
         creatureFitnessMap.put(creature, fitness); 
-      //  fitCount++; 
-        //System.out.println(fitness);
-        
         avgFitness += (float)fitness; 
         
         if(dead) {
-           // If the creature died during simulation, you can determine
-           // its time of death (in turns)
            int timeOfDeath = creature.timeOfDeath();
            avgLifeTime += (float) timeOfDeath;
         } else {
@@ -264,38 +228,9 @@ public class MyWorld extends World {
            avgLifeTime += (float) _numTurns;
         }
      }
-     //move to below for loop, add offspring to new_population in ith position  
-     //MyCreature parent1 = parentSelection(creatureFitnessMap); 
-     //MyCreature parent2 = parentSelection(creatureFitnessMap);
-   //  System.out.println("Parent 1: " + parent1.parentID + " Energy at death: " + parent1.getEnergy());
-     //System.out.println("Parent 2: " + parent2.parentID + " Energy at death: " + parent2.getEnergy());
-     
-   //  MyCreature offspring = crossOver(parent1, parent2);
-  //   System.out.println("Offspring: " + offspring.parentID + "Genotype: " + offspring.chromosome);  
- /*    System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
-	  for(int i : parent1.chromosome){
-		  System.out.print(i);
-	  }
-	  System.out.println();
-	  
-	  System.out.print("Parent 2:  " + parent2.creatureID + " Genotype: ");
-	  for(int i : parent2.chromosome){
-		  System.out.print(i);
-	  }
-	  System.out.println();
-	  
-	  System.out.print("Offspring: " + offspring.creatureID + " Genotype: ");
-	  for(int i : offspring.chromosome){
-		  System.out.print(i);
-	  }
-	  System.out.println();*/
      //crossover, add random mutation to the chromosome. 
      //print average fitness of all creatures and plot this over generations. 
 
-     // Right now the information is used to print some stats...but you should
-     // use this information to access creatures fitness.  It's up to you how
-     // you define your fitness function.  You should add a print out or
-     // some visual display of average fitness over generations.
      avgLifeTime /= (float) numCreatures;
      avgFitness /= (float) numCreatures; 
      System.out.println("Simulation stats:");
@@ -305,10 +240,11 @@ public class MyWorld extends World {
      
     
     //Writing data to text file to plot on graph using FitnessLineChart 
+     //Do I have to open and close each time? 
      try{
     	 fw = new FileWriter(FILENAME, true);
          bw = new BufferedWriter(fw);
-    	 bw.write(dataIndex + " " + Float.toString(avgFitness)+" "+ Float.toString(avgLifeTime) +"\n");
+    	 bw.write(genIndex + " " + Float.toString(avgFitness)+" "+ Float.toString(avgLifeTime) +"\n");
      }catch(IOException e){
     	 e.printStackTrace();
      }finally{
@@ -323,53 +259,40 @@ public class MyWorld extends World {
 			e.printStackTrace();
 		}
      }
-     dataIndex++; 
+     genIndex++; 
      
-
-     
-     // Having some way of measuring the fitness, you should implement a proper
-     // parent selection method here and create a set of new creatures.  You need
-     // to create numCreatures of the new creatures.  If you'd like to have
-     // some elitism, you can use old creatures in the next generation.  This
-     // example code uses all the creatures from the old generation in the
-     // new generation.
-     
-     //add new creatures!! 
-     
-     //Messed up my genotypes wtf!!! 
      MyCreature parent1, parent2, offspring;
+ 
      for(int i=0;i<numCreatures/2; i++) {
     	 parent1 = parentSelection(creatureFitnessMap); 
          parent2 = parentSelection(creatureFitnessMap);
-         
          offspring = crossOver(parent1, parent2);
+         new_population[i] = offspring; 
          
-         System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
+    /*     System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
 	   	  for(int x : parent1.chromosome){
-	   		  System.out.print(i);
+	   		  System.out.print(x);
 	   	  }
 	   	  System.out.println();
 	   	  
 	   	  System.out.print("Parent 2:  " + parent2.creatureID + " Genotype: ");
 	   	  for(int x : parent2.chromosome){
-	   		  System.out.print(i);
+	   		  System.out.print(x);
 	   	  }
 	   	  System.out.println();
 	   	  
 	   	  System.out.print("Offspring: " + offspring.creatureID + " Genotype: ");
 	   	  for(int x : offspring.chromosome){
-	   		  System.out.print(i);
+	   		  System.out.print(x);
 	   	  }
-	   	  System.out.println();
-         new_population[i] = offspring; 
+	   	  System.out.println();*/
+         
      }
      
-     //elitism! - keep half of old population
+     //Elitism! - keep half of old population - change to subset n 
      for(int i=numCreatures/2; i < numCreatures; i++) {
          new_population[i] = old_population[i];
      }
-     
-     
 
      // Return new population of cratures. same number as old population. 
      return new_population;

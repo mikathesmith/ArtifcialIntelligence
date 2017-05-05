@@ -11,7 +11,7 @@ import java.util.Random;
 * AgentFunction. Implement creature behaviour. 
 *
 * @author  Mika Smith 
-* @version 3.0
+* @version 4.0
 * @since   2017-04-05 
 */
 public class MyCreature extends Creature {
@@ -91,13 +91,9 @@ public class MyCreature extends Creature {
 	//	 System.out.print("Old gene: "+ gene.toString() + " Flipping at: " + bitToFlip);
 		 int toFlip = Character.getNumericValue(gene.charAt(bitToFlip+1));
 		 toFlip ^= 1; 
-		 //or just make and return a whole new string? 
-		 StringBuilder flipString = new StringBuilder(); 
+		 StringBuilder flipString = new StringBuilder(); //or jsut convert to String? 
 		 flipString.append(toFlip);
 		 gene.setCharAt(bitToFlip+1, flipString.charAt(0)); //need toFlip to be its literal character
-		 //bit manipulation to flip bit 
-		// System.out.print(" New gene: "+ gene.toString());
-		// System.out.println(); 
 	 }
 	 return directionMap.get(gene.toString()); 
   }
@@ -121,22 +117,12 @@ public class MyCreature extends Creature {
             numExpectedAction - this number tells you what the expected size
                                 of the returned array of percepts should bes -11
      Returns: an array of actions 
-     
-    
-     
   */
   @Override 
   public float[] AgentFunction(int[] percepts, int numPercepts, int numExpectedActions) {
 	//need to compute action vector from percept vector. Parametrised by the chromosome, so that when  
 	 //the chromosome values change, the computation changes.  
-      
-      // This is where your chromosome gives rise to the model that maps
-      // percepts to actions.  This function governs your creature's behaviour.
-      // You need to figure out what model you want to use, and how you're going
-      // to encode its parameters in a chromosome.
-      
-      // At the moment, the actions are chosen completely at random, ignoring
-      // the percepts.  You need to replace this code.
+
       float actions[] = new float[numExpectedActions];
       int moveDirection;
       Boolean eat= (chromosome[0]==1) ? true : false;
@@ -186,15 +172,7 @@ public class MyCreature extends Creature {
 		 actions[10] = 5; //currently do random movement - change to be based on chromosome  
 	 }
     	
-      
-      
-      //implement a computational modeel that computes action vector from the 
-      //percept vector. This model should be parametrised by the chromosome,
-      //so that when the chromosome values change, the computation changes.
-      //
       return actions; //return array of actions. The index of the largest value
       //element in the action array will be taken as the desired action. 
   }
-  
-  
 }
