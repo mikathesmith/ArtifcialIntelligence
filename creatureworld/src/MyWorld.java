@@ -27,7 +27,7 @@ public class MyWorld extends World {
    * execute.
   */
   private final int _numTurns = 100;
-  private final int _numGenerations = 1000;
+  private final int _numGenerations = 500;
   private static final String FILENAME = "fitnessdata.txt";
  // public float[] fitnessData = new float[_numGenerations];
   public int dataIndex = 1;
@@ -109,7 +109,7 @@ public class MyWorld extends World {
   }
   
   public int calculateFitness(int energy, Boolean dead){
-	  if(!dead) return 10; //If they survived, give them maximum value 
+	  if(!dead) return 15; //If they survived, give them maximum value 
 	  return energy/10; //if not, set their fitness as their energy from 1 to 10 
   }
   
@@ -136,7 +136,7 @@ public class MyWorld extends World {
 		  }
 	  }
 	//  System.out.println("Max is "+ max);
-	  int candIndex = rand.nextInt(fitCandidates.size());
+	  int candIndex = rand.nextInt(fitCandidates.size()); //error here! choosing number between 0 and 0 when there is only one entry! 
 	  MyCreature candidate = fitCandidates.get(candIndex);
 	  creatureFitnessMap.remove(candidate); //does this alter the global hashmap? 
 	  return candidate;  
@@ -149,14 +149,16 @@ public class MyWorld extends World {
 	  int numActions = this.expectedNumberofActions();
 	  
 	  int crossoverIndex = p1.chromosome.length/2; //make this the mid point, number of genes/2  
-	  //find out how to access values in chromosome; 
+	  //find out how to access values in chromosome; ()
 	 // MyCreature offspring;
+	  MyCreature offspring = new MyCreature(numPercepts, numActions);
 	  int[] offspringChromosome = new int[p1.chromosome.length];
 	  for(int i=0; i < crossoverIndex; i++){
-		  offspringChromosome[i] = p1.chromosome[i];
+		  System.out.println(chromosome[i];
+		  offspring.chromosome[i] = p1.chromosome[i];
 	  }
 	  for(int i= crossoverIndex; i < p1.chromosome.length ;i++){
-		  offspringChromosome[i] = p2.chromosome[i];
+		  offspring.chromosome[i] = p2.chromosome[i];
 	  }
 	//  System.out.println("Crossover point: "+ crossoverIndex);
 	  
@@ -182,8 +184,9 @@ public class MyWorld extends World {
 	  
 	  //append crossoverIndex to chromosome.length-1 to offSpringChromosome
 	  
-	  MyCreature offspring = new MyCreature(numPercepts, numActions);
-	  offspring.chromosome = offspringChromosome;
+	  
+	 // offspring.chromosome = offspringChromosome;
+	 
 	  return offspring; 
 	  //return null;
   }
@@ -262,14 +265,14 @@ public class MyWorld extends World {
         }
      }
      //move to below for loop, add offspring to new_population in ith position  
-     MyCreature parent1 = parentSelection(creatureFitnessMap); 
-     MyCreature parent2 = parentSelection(creatureFitnessMap);
+     //MyCreature parent1 = parentSelection(creatureFitnessMap); 
+     //MyCreature parent2 = parentSelection(creatureFitnessMap);
    //  System.out.println("Parent 1: " + parent1.parentID + " Energy at death: " + parent1.getEnergy());
      //System.out.println("Parent 2: " + parent2.parentID + " Energy at death: " + parent2.getEnergy());
      
-     MyCreature offspring = crossOver(parent1, parent2);
+   //  MyCreature offspring = crossOver(parent1, parent2);
   //   System.out.println("Offspring: " + offspring.parentID + "Genotype: " + offspring.chromosome);  
-     System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
+ /*    System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
 	  for(int i : parent1.chromosome){
 		  System.out.print(i);
 	  }
@@ -285,7 +288,7 @@ public class MyWorld extends World {
 	  for(int i : offspring.chromosome){
 		  System.out.print(i);
 	  }
-	  System.out.println();
+	  System.out.println();*/
      //crossover, add random mutation to the chromosome. 
      //print average fitness of all creatures and plot this over generations. 
 
@@ -300,12 +303,12 @@ public class MyWorld extends World {
      System.out.println("  Avg life time: " + avgLifeTime + " turns");
      System.out.println("  Avg fitness: " + avgFitness);
      
-    // fitnessData[dataIndex] = avgFitness;
-     
+    
+    //Writing data to text file to plot on graph using FitnessLineChart 
      try{
     	 fw = new FileWriter(FILENAME, true);
          bw = new BufferedWriter(fw);
-    	 bw.write(dataIndex + " " + Float.toString(avgFitness)+"\n");
+    	 bw.write(dataIndex + " " + Float.toString(avgFitness)+" "+ Float.toString(avgLifeTime) +"\n");
      }catch(IOException e){
     	 e.printStackTrace();
      }finally{
@@ -317,9 +320,7 @@ public class MyWorld extends World {
 				fw.close();
 
 		}catch (IOException e) {
-
 			e.printStackTrace();
-
 		}
      }
      dataIndex++; 
@@ -332,9 +333,42 @@ public class MyWorld extends World {
      // some elitism, you can use old creatures in the next generation.  This
      // example code uses all the creatures from the old generation in the
      // new generation.
-     for(int i=0;i<numCreatures; i++) {
-        new_population[i] = old_population[i];
+     
+     //add new creatures!! 
+     
+     //Messed up my genotypes wtf!!! 
+     MyCreature parent1, parent2, offspring;
+     for(int i=0;i<numCreatures/2; i++) {
+    	 parent1 = parentSelection(creatureFitnessMap); 
+         parent2 = parentSelection(creatureFitnessMap);
+         
+         offspring = crossOver(parent1, parent2);
+         
+         System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
+	   	  for(int x : parent1.chromosome){
+	   		  System.out.print(i);
+	   	  }
+	   	  System.out.println();
+	   	  
+	   	  System.out.print("Parent 2:  " + parent2.creatureID + " Genotype: ");
+	   	  for(int x : parent2.chromosome){
+	   		  System.out.print(i);
+	   	  }
+	   	  System.out.println();
+	   	  
+	   	  System.out.print("Offspring: " + offspring.creatureID + " Genotype: ");
+	   	  for(int x : offspring.chromosome){
+	   		  System.out.print(i);
+	   	  }
+	   	  System.out.println();
+         new_population[i] = offspring; 
      }
+     
+     //elitism! - keep half of old population
+     for(int i=numCreatures/2; i < numCreatures; i++) {
+         new_population[i] = old_population[i];
+     }
+     
      
 
      // Return new population of cratures. same number as old population. 

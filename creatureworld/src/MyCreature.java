@@ -60,6 +60,7 @@ public class MyCreature extends Creature {
       //Index 8 = always random behaviour 
       for(int i=0; i < chromosome.length;i++){
     	  chromosome[i] = rand.nextInt(2); //initialises genes to either 1 or 0 
+    	//  System.out.println(chromosome[i]);
       }
       
       //chromosome encoding goes here - how it reacts to percepts.  
