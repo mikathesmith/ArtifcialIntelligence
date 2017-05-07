@@ -11,7 +11,7 @@ import java.util.Random;
 * AgentFunction. Implement creature behaviour. 
 *
 * @author  Mika Smith 
-* @version 4.0
+* @version 5.0
 * @since   2017-04-05 
 */
 public class MyCreature extends Creature {

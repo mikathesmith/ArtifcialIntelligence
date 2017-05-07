@@ -13,7 +13,7 @@ import java.io.*;
 * Implement fitness evaluation and creation of new generations of creatures 
 *
 * @author  Mika Smith
-* @version 4.0
+* @version 5.0
 * @since   2017-04-05 
 */
 
@@ -24,8 +24,8 @@ public class MyWorld extends World {
    * and the number of generations that the genetic algorithm will 
    * execute.
   */
-  private final int _numTurns = 100;
-  private final int _numGenerations = 1000;
+  private final int _numTurns = 85;
+  private final int _numGenerations = 1500;
   
   //The name of the file to write the fitness data to to produce a graph from 
   private static final String FILENAME = "fitnessdata.txt";
@@ -55,9 +55,9 @@ public class MyWorld extends World {
 
   */
   public static void main(String[] args) {
-     int gridSize = 24;
-     int windowWidth =  1600;
-     int windowHeight = 900;
+     int gridSize = 36;
+     int windowWidth =  1800;
+     int windowHeight = 1200;
      boolean repeatableMode = false;
      int perceptFormat = 1;     
      
@@ -119,9 +119,13 @@ public class MyWorld extends World {
 	  
 	  //Is there a better way to do this!! Takes in the ENTIRE map of creatures and their fitnesses. 
 	  
-	  //Choose a subset to iterate! 
+	  //Choose a subset to iterate!  creatureFitnessMap.size()/4
 	  double max = 0;
 	  ArrayList<MyCreature> fitCandidates = new ArrayList<MyCreature>();
+	  
+	  //starts at 20, goes to 0?? 
+	  int subsetSize = creatureFitnessMap.size()/4; 
+	  System.out.println("Subset Size: "+subsetSize);
 	  for(Map.Entry<MyCreature, Double> entry : creatureFitnessMap.entrySet()){
 		  double currentFitness = entry.getValue(); 
 		  if(currentFitness >= max){
@@ -134,6 +138,8 @@ public class MyWorld extends World {
 	  }
 	  int candIndex = rand.nextInt(fitCandidates.size()); 
 	  MyCreature candidate = fitCandidates.get(candIndex);
+	  
+	  //Is this step necessary? Can we choose the same parent twice? 
 	  creatureFitnessMap.remove(candidate); 
 	  return candidate;  
   }
@@ -146,19 +152,21 @@ public class MyWorld extends World {
 	  
 	  //This is the midpoint of the chromosome. Should this be a random point? 
 	  int crossoverIndex = p1.chromosome.length/2;
+	 // System.out.println(crossoverIndex);
 	  MyCreature offspring = new MyCreature(numPercepts, numActions);
 	  
 	  //Replace offspring's random chromosome with half of p1 and half of p2 at the crossover point. 
-	  for(int i=0; i < crossoverIndex; i++){
+	  for(int i=0; i <= crossoverIndex; i++){
 		  offspring.chromosome[i] = p1.chromosome[i];
 	  }
-	  for(int i= crossoverIndex; i < p1.chromosome.length ;i++){
+	  for(int i= crossoverIndex + 1; i < p1.chromosome.length ;i++){
 		  offspring.chromosome[i] = p2.chromosome[i];
 	  }
 	  
 	  //With some probability, call mutation 
 	  double probMutate = rand.nextDouble();
-	  if(probMutate < 0.01){ //Change this prob? 
+	  //System.out.println(probMutate);
+	  if(probMutate < 0.002){ //Change this prob? 
 		  for(int x : offspring.chromosome){
 	   		  System.out.print(x);
 	   	  }
@@ -264,12 +272,14 @@ public class MyWorld extends World {
      MyCreature parent1, parent2, offspring;
  
      for(int i=0;i<numCreatures/2; i++) {
+    	 
     	 parent1 = parentSelection(creatureFitnessMap); 
          parent2 = parentSelection(creatureFitnessMap);
+         
          offspring = crossOver(parent1, parent2);
          new_population[i] = offspring; 
          
-    /*     System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
+         System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
 	   	  for(int x : parent1.chromosome){
 	   		  System.out.print(x);
 	   	  }
@@ -285,11 +295,14 @@ public class MyWorld extends World {
 	   	  for(int x : offspring.chromosome){
 	   		  System.out.print(x);
 	   	  }
-	   	  System.out.println();*/
+	   	  System.out.println();
          
      }
      
      //Elitism! - keep half of old population - change to subset n 
+     //should not exceed 10% of the total population to maintian diversity
+     //5% may be direct part of next generation and remaining should go through crossover
+     
      for(int i=numCreatures/2; i < numCreatures; i++) {
          new_population[i] = old_population[i];
      }

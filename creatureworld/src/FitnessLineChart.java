@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 * Note: Must delete old fitnessdata.txt everytime you want to run a new round 
 *
 * @author  Mika Smith 
-* @version 4.0
+* @version 5.0
 * @since   2017-04-05 
 */
 
@@ -30,7 +30,6 @@ public class FitnessLineChart extends Application {
 	/*Add a data point to the chart*/ 
 	public void addToChart(Series<Number, Number> series, int generation, float fitness){
 		series.getData().add(new XYChart.Data<Number, Number>(generation, fitness));
-		
 	}
  
     @Override public void start(Stage stage) {
@@ -41,10 +40,10 @@ public class FitnessLineChart extends Application {
           yAxis.setLabel("Average Fitness"); 
           
           //Manually set lower and upper bounds for fitness on the y axis
-         // yAxis.setLowerBound(1); 
-          //yAxis.setUpperBound(8);
-          yAxis.setLowerBound(30); 
-          yAxis.setUpperBound(60);
+           yAxis.setLowerBound(1); 
+          yAxis.setUpperBound(8);
+          //yAxis.setLowerBound(30); 
+        //  yAxis.setUpperBound(60);
           yAxis.setAutoRanging(false);
           
           //Create the line chart 
@@ -105,8 +104,8 @@ public class FitnessLineChart extends Application {
 	    
 	    	
 	      //Add our series data to the linechart 
-      //  lineChart.getData().add(series); //Average fitness
-        lineChart.getData().add(series2); //Average lifetime
+        lineChart.getData().add(series); //Average fitness
+      //  lineChart.getData().add(series2); //Average lifetime
        
         //Add linechart to window
         stage.setScene(scene);
