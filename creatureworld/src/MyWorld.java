@@ -109,7 +109,7 @@ public class MyWorld extends World {
   //pass in map of calculated fitnesses to creature. 
   //Find two creatures with maximal fitnesses and breed
   //need to update so that we are using roulette wheel or tournament selection!  
-  public MyCreature parentSelection(HashMap<MyCreature, Double> creatureFitnessMap, ArrayList<MyCreature> selectedIndividuals){
+  public MyCreature parentSelection(HashMap<MyCreature, Double> creatureFitnessMap){
 	/*Testing its entering the hashmap   
 	  for(Map.Entry<MyCreature, Integer> entry : creatureFitnessMap.entrySet()){
 		  System.out.println(entry.getKey().getEnergy() + " " + entry.getValue());
@@ -124,15 +124,50 @@ public class MyWorld extends World {
 	  
 	  //starts at 19, goes to 0?? 
 	  int subsetSize = creatureFitnessMap.size()/4; 
+	  //use parentID - choose random ID in range! 
+	  
 	//  System.out.println("Subset Size: "+subsetSize);
 	/*  for(int i = 0; i < subsetSize; i++){
 		  int cand = rand.nextInt(creatureFitnessMap.size()); 
 		  fitCandidates.add(creatureFitnessMap.get()); //get in position cand?? - can't do this 
 		  //as hashmap is not indexed! 
 	  }*/
-	  int count = 0; 
-	  //this subset may always be the same - eg first n of hashmap entries.. need more variety
+	  int minID = Integer.MAX_VALUE;
+	  int maxID = Integer.MIN_VALUE;
+	  
+	  
+	  //Loop through to get min and max values to find range
 	  for(Map.Entry<MyCreature, Double> entry : creatureFitnessMap.entrySet()){
+		  int currentID = entry.getKey().creatureID; 
+		  if(currentID > maxID){
+			  maxID = currentID;
+		  }
+		  if(currentID < minID){
+			  minID = currentID; 
+		  }
+	  }  
+	  
+	//  ArrayList<MyCreature> population = new ArrayList<MyCreature>();
+	  
+	  //choose random subset of population to add to list 
+	  for(int i = 0; i < subsetSize; i++){
+		  int cand = minID + rand.nextInt(maxID - minID + 1); //random index 
+		  
+		  for(Map.Entry<MyCreature, Double> entry : creatureFitnessMap.entrySet()){
+			  MyCreature creat = entry.getKey(); 
+			  if(creat.creatureID == cand){
+				  fitCandidates.add(creat);		  
+			  }
+		  }
+	  }
+	  
+	  //get fittest 
+	  
+	  //this subset may always be the same - eg first n of hashmap entries.. need more variety
+	 /* 
+	  * THis chooses all that are maximum then one randomly
+	  * int count = 0; 
+	  * for(Map.Entry<MyCreature, Double> entry : creatureFitnessMap.entrySet()){
 		  if(count==subsetSize) break; 
 		  
 		  double currentFitness = entry.getValue(); 
@@ -144,16 +179,31 @@ public class MyWorld extends World {
 			  fitCandidates.add(entry.getKey());
 		  }
 		  count++; 
-	  } 
-	  
-	  int candIndex = rand.nextInt(fitCandidates.size()); 
-	  //
-	  
+		  int candIndex = rand.nextInt(fitCandidates.size()); 
 	  MyCreature candidate = fitCandidates.get(candIndex);
+	  } */
 	  
+	  MyCreature fittest = null; 
+	  //This chooses the first value that is maximum (only one) 
+	  for(MyCreature creat : fitCandidates){
+		  double currentFitness = creatureFitnessMap.get(creat);
+	
+		  if(currentFitness > max){
+			//  if(currentFitness > max){
+				  max = currentFitness;
+				  fittest = creat; 
+				//  fitCandidates.clear(); 
+			//  }
+			//  fitCandidates.add(entry.getKey());
+		  }
+	  }
+	  
+	  //Find maximum of list 
+	  
+	  //Still getting duplicates 
 	  //Is this step necessary? Can we choose the same parent twice?  While parentID == old parent ID, do again? 
-	  //creatureFitnessMap.remove(candidate); 
-	  return candidate;  
+	//  creatureFitnessMap.remove(candidate); 
+	  return fittest;   
   }
   
   //Takes two chromosomes and returns a new one by crossing them over 
