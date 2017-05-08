@@ -123,10 +123,16 @@ public class MyWorld extends World {
 	  double max = 0;
 	  ArrayList<MyCreature> fitCandidates = new ArrayList<MyCreature>();
 	  
-	  //starts at 20, goes to 0?? 
+	  //starts at 19, goes to 0?? 
 	  int subsetSize = creatureFitnessMap.size()/4; 
-	  System.out.println("Subset Size: "+subsetSize);
-	  for(Map.Entry<MyCreature, Double> entry : creatureFitnessMap.entrySet()){
+	//  System.out.println("Subset Size: "+subsetSize);
+	  for(int i = 0; i < subsetSize; i++){
+		  int cand = rand.nextInt(creatureFitnessMap.size()); 
+		  fitCandidates.add(creatureFitnessMap.get()); //get in position cand?? 
+	  }
+	  
+	/*  for(Map.Entry<MyCreature, Double> entry : creatureFitnessMap.entrySet()){
+		  
 		  double currentFitness = entry.getValue(); 
 		  if(currentFitness >= max){
 			  if(currentFitness > max){
@@ -135,12 +141,12 @@ public class MyWorld extends World {
 			  }
 			  fitCandidates.add(entry.getKey());
 		  }
-	  }
+	  }*/ 
 	  int candIndex = rand.nextInt(fitCandidates.size()); 
 	  MyCreature candidate = fitCandidates.get(candIndex);
 	  
-	  //Is this step necessary? Can we choose the same parent twice? 
-	  creatureFitnessMap.remove(candidate); 
+	  //Is this step necessary? Can we choose the same parent twice?  While parentID == old parent ID, do again? 
+	 // creatureFitnessMap.remove(candidate); 
 	  return candidate;  
   }
   
