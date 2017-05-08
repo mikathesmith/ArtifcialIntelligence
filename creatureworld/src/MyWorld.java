@@ -25,7 +25,7 @@ public class MyWorld extends World {
    * execute.
   */
   private final int _numTurns = 85;
-  private final int _numGenerations = 500;
+  private final int _numGenerations = 1000;
   
   //The name of the file to write the fitness data to to produce a graph from 
   private static final String FILENAME = "fitnessdata.txt";
@@ -296,7 +296,7 @@ public class MyWorld extends World {
          offspring = crossOver(parent1, parent2);
          new_population[i] = offspring; 
          
-         System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
+     /*    System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
 	   	  for(int x : parent1.chromosome){
 	   		  System.out.print(x);
 	   	  }
@@ -312,7 +312,7 @@ public class MyWorld extends World {
 	   	  for(int x : offspring.chromosome){
 	   		  System.out.print(x);
 	   	  }
-	   	  System.out.println();
+	   	  System.out.println();*/
          
      }
      
