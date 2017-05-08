@@ -56,7 +56,7 @@ public class MyWorld extends World {
   */
   public static void main(String[] args) {
      int gridSize = 36;
-     int windowWidth =  1800;
+     int windowWidth =  1500;
      int windowHeight = 1200;
      boolean repeatableMode = false;
      int perceptFormat = 1;     
@@ -110,28 +110,10 @@ public class MyWorld extends World {
   //Find two creatures with maximal fitnesses and breed
   //need to update so that we are using roulette wheel or tournament selection!  
   public MyCreature parentSelection(HashMap<MyCreature, Double> creatureFitnessMap){
-	/*Testing its entering the hashmap   
-	  for(Map.Entry<MyCreature, Integer> entry : creatureFitnessMap.entrySet()){
-		  System.out.println(entry.getKey().getEnergy() + " " + entry.getValue());
-	  }
-	  */
-	  
-	  //Is there a better way to do this!! Takes in the ENTIRE map of creatures and their fitnesses. 
-	  
 	  //Choose a subset to iterate!  creatureFitnessMap.size()/4
 	  double max = 0;
-	  ArrayList<MyCreature> fitCandidates = new ArrayList<MyCreature>();
-	  
-	  //starts at 19, goes to 0?? 
-	  int subsetSize = creatureFitnessMap.size()/4; 
-	  //use parentID - choose random ID in range! 
-	  
-	//  System.out.println("Subset Size: "+subsetSize);
-	/*  for(int i = 0; i < subsetSize; i++){
-		  int cand = rand.nextInt(creatureFitnessMap.size()); 
-		  fitCandidates.add(creatureFitnessMap.get()); //get in position cand?? - can't do this 
-		  //as hashmap is not indexed! 
-	  }*/
+	  ArrayList<MyCreature> fitCandidates = new ArrayList<MyCreature>();  
+	  int subsetSize = 5;
 	  int minID = Integer.MAX_VALUE;
 	  int maxID = Integer.MIN_VALUE;
 	  
@@ -147,62 +129,35 @@ public class MyWorld extends World {
 		  }
 	  }  
 	  
-	//  ArrayList<MyCreature> population = new ArrayList<MyCreature>();
-	  
-	  //choose random subset of population to add to list 
-	  for(int i = 0; i < subsetSize; i++){
-		  int cand = minID + rand.nextInt(maxID - minID + 1); //random index 
+	  //Get 5 random inidividuals to add to 
+	  while(fitCandidates.size() < subsetSize){
+		  int cand = minID + rand.nextInt(maxID - minID + 1); //random index in range of creature ID's 
 		  
+		  //Find a better way to grab creatures ? This deals with the in case the creature has been removed
+		  //ie already selected
 		  for(Map.Entry<MyCreature, Double> entry : creatureFitnessMap.entrySet()){
 			  MyCreature creat = entry.getKey(); 
-			  if(creat.creatureID == cand){
-				  fitCandidates.add(creat);		  
+			  if(creat.creatureID == cand){ 
+				  fitCandidates.add(creat);
+				  break; 
 			  }
 		  }
 	  }
 	  
-	  //get fittest 
-	  
-	  //this subset may always be the same - eg first n of hashmap entries.. need more variety
-	 /* 
-	  * THis chooses all that are maximum then one randomly
-	  * int count = 0; 
-	  * for(Map.Entry<MyCreature, Double> entry : creatureFitnessMap.entrySet()){
-		  if(count==subsetSize) break; 
-		  
-		  double currentFitness = entry.getValue(); 
-		  if(currentFitness >= max){
-			  if(currentFitness > max){
-				  max = currentFitness;
-				  fitCandidates.clear(); 
-			  }
-			  fitCandidates.add(entry.getKey());
-		  }
-		  count++; 
-		  int candIndex = rand.nextInt(fitCandidates.size()); 
-	  MyCreature candidate = fitCandidates.get(candIndex);
-	  } */
-	  
+	  //Iterate through our subset to find the one with the maximum fitness
 	  MyCreature fittest = null; 
-	  //This chooses the first value that is maximum (only one) 
 	  for(MyCreature creat : fitCandidates){
 		  double currentFitness = creatureFitnessMap.get(creat);
+		  if(fittest==null) fittest = creat; //ensure we aren't returning a null 
 	
 		  if(currentFitness > max){
-			//  if(currentFitness > max){
-				  max = currentFitness;
-				  fittest = creat; 
-				//  fitCandidates.clear(); 
-			//  }
-			//  fitCandidates.add(entry.getKey());
+			  max = currentFitness;
+			  fittest = creat; 
 		  }
 	  }
 	  
-	  //Find maximum of list 
-	  
-	  //Still getting duplicates 
-	  //Is this step necessary? Can we choose the same parent twice?  While parentID == old parent ID, do again? 
-	//  creatureFitnessMap.remove(candidate); 
+	  //Can we choose the same parent twice? 
+	  creatureFitnessMap.remove(fittest); 
 	  return fittest;   
   }
   
@@ -221,7 +176,7 @@ public class MyWorld extends World {
 	  for(int i=0; i <= crossoverIndex; i++){
 		  offspring.chromosome[i] = p1.chromosome[i];
 	  }
-	  for(int i= crossoverIndex + 1; i < p1.chromosome.length ;i++){
+	  for(int i= crossoverIndex + 1; i < p1.chromosome.length;i++){
 		  offspring.chromosome[i] = p2.chromosome[i];
 	  }
 	  

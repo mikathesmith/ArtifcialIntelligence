@@ -37,18 +37,20 @@ public class FitnessLineChart extends Application {
           final NumberAxis xAxis = new NumberAxis();
           final NumberAxis yAxis = new NumberAxis();
           xAxis.setLabel("Generation");
-          yAxis.setLabel("Average Fitness"); 
+          //yAxis.setLabel("Average Fitness"); 
+          yAxis.setLabel("Average Life Time");
           
           //Manually set lower and upper bounds for fitness on the y axis
-           yAxis.setLowerBound(1); 
-          yAxis.setUpperBound(8);
-          //yAxis.setLowerBound(30); 
-        //  yAxis.setUpperBound(60);
+         //  yAxis.setLowerBound(1); 
+          //yAxis.setUpperBound(8);
+          yAxis.setLowerBound(30); 
+          yAxis.setUpperBound(60);
           yAxis.setAutoRanging(false);
           
           //Create the line chart 
           final LineChart<Number,Number> lineChart =  new LineChart<Number,Number>(xAxis,yAxis);
-          lineChart.setTitle("Average Fitness over 500 Generations");
+        //  lineChart.setTitle("Average Fitness over 500 Generations");
+          lineChart.setTitle("Average Life Time over 500 Generations");
           lineChart.setCreateSymbols(false); //creates more of a trend 
           
           //Create window with line chart 
@@ -104,8 +106,8 @@ public class FitnessLineChart extends Application {
 	    
 	    	
 	      //Add our series data to the linechart 
-        lineChart.getData().add(series); //Average fitness
-      //  lineChart.getData().add(series2); //Average lifetime
+       // lineChart.getData().add(series); //Average fitness
+        lineChart.getData().add(series2); //Average lifetime
        
         //Add linechart to window
         stage.setScene(scene);
