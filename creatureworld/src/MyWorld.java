@@ -25,7 +25,7 @@ public class MyWorld extends World {
    * execute.
   */
   private final int _numTurns = 85;
-  private final int _numGenerations = 1500;
+  private final int _numGenerations = 500;
   
   //The name of the file to write the fitness data to to produce a graph from 
   private static final String FILENAME = "fitnessdata.txt";
@@ -63,8 +63,7 @@ public class MyWorld extends World {
      
      // Instantiate MyWorld object.  The rest of the application is driven
      // from the window that will be displayed.
-     MyWorld sim = new MyWorld(gridSize, windowWidth, windowHeight, repeatableMode, perceptFormat);
-     
+     MyWorld sim = new MyWorld(gridSize, windowWidth, windowHeight, repeatableMode, perceptFormat);  
   }
   
 
@@ -110,7 +109,7 @@ public class MyWorld extends World {
   //pass in map of calculated fitnesses to creature. 
   //Find two creatures with maximal fitnesses and breed
   //need to update so that we are using roulette wheel or tournament selection!  
-  public MyCreature parentSelection(HashMap<MyCreature, Double> creatureFitnessMap){
+  public MyCreature parentSelection(HashMap<MyCreature, Double> creatureFitnessMap, ArrayList<MyCreature> selectedIndividuals){
 	/*Testing its entering the hashmap   
 	  for(Map.Entry<MyCreature, Integer> entry : creatureFitnessMap.entrySet()){
 		  System.out.println(entry.getKey().getEnergy() + " " + entry.getValue());
@@ -126,12 +125,15 @@ public class MyWorld extends World {
 	  //starts at 19, goes to 0?? 
 	  int subsetSize = creatureFitnessMap.size()/4; 
 	//  System.out.println("Subset Size: "+subsetSize);
-	  for(int i = 0; i < subsetSize; i++){
+	/*  for(int i = 0; i < subsetSize; i++){
 		  int cand = rand.nextInt(creatureFitnessMap.size()); 
-		  fitCandidates.add(creatureFitnessMap.get()); //get in position cand?? 
-	  }
-	  
-	/*  for(Map.Entry<MyCreature, Double> entry : creatureFitnessMap.entrySet()){
+		  fitCandidates.add(creatureFitnessMap.get()); //get in position cand?? - can't do this 
+		  //as hashmap is not indexed! 
+	  }*/
+	  int count = 0; 
+	  //this subset may always be the same - eg first n of hashmap entries.. need more variety
+	  for(Map.Entry<MyCreature, Double> entry : creatureFitnessMap.entrySet()){
+		  if(count==subsetSize) break; 
 		  
 		  double currentFitness = entry.getValue(); 
 		  if(currentFitness >= max){
@@ -141,12 +143,16 @@ public class MyWorld extends World {
 			  }
 			  fitCandidates.add(entry.getKey());
 		  }
-	  }*/ 
+		  count++; 
+	  } 
+	  
 	  int candIndex = rand.nextInt(fitCandidates.size()); 
+	  //
+	  
 	  MyCreature candidate = fitCandidates.get(candIndex);
 	  
 	  //Is this step necessary? Can we choose the same parent twice?  While parentID == old parent ID, do again? 
-	 // creatureFitnessMap.remove(candidate); 
+	  //creatureFitnessMap.remove(candidate); 
 	  return candidate;  
   }
   
