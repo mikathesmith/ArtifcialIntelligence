@@ -33,6 +33,8 @@ public class MyWorld extends World {
   public static FileWriter fw = null;
   public static BufferedWriter bw = null; 
   public Random rand = new Random(); 
+  public static final double mutationProb = 0.002; 
+  public static final boolean elitism = true;  
   
   /* Constructor.  
    
@@ -58,7 +60,7 @@ public class MyWorld extends World {
      int gridSize = 36;
      int windowWidth =  1500;
      int windowHeight = 1200;
-     boolean repeatableMode = false;
+     boolean repeatableMode = true;
      int perceptFormat = 1;     
      
      // Instantiate MyWorld object.  The rest of the application is driven
@@ -182,16 +184,8 @@ public class MyWorld extends World {
 	  
 	  //With some probability, call mutation 
 	  double probMutate = rand.nextDouble();
-	  //System.out.println(probMutate);
-	  if(probMutate < 0.002){ //Change this prob? 
-		  for(int x : offspring.chromosome){
-	   		  System.out.print(x);
-	   	  }
+	  if(probMutate < mutationProb){ 
 		  offspring = mutation(offspring);
-		  System.out.println("I've been mutated!");
-		  for(int x : offspring.chromosome){
-	   		  System.out.print(x);
-	   	  }
 	  }
 	  return offspring; 
   }
@@ -227,9 +221,8 @@ public class MyWorld extends World {
   */  
   @Override //called in the evolution phase. 
   public MyCreature[] nextGeneration(Creature[] old_population_btc, int numCreatures) {
-    // Typcast old_population of Creatures to array of MyCreatures - is this always the ORIGINAL population?
+  
      MyCreature[] old_population = (MyCreature[]) old_population_btc;
-     // Create a new array for the new population
      MyCreature[] new_population = new MyCreature[numCreatures];
      
      HashMap<MyCreature,Double> creatureFitnessMap = new HashMap<MyCreature, Double>(); 
@@ -265,7 +258,7 @@ public class MyWorld extends World {
      
     
     //Writing data to text file to plot on graph using FitnessLineChart 
-     //Do I have to open and close each time? 
+    //Do I have to open and close each time? 
      try{
     	 fw = new FileWriter(FILENAME, true);
          bw = new BufferedWriter(fw);
@@ -287,15 +280,17 @@ public class MyWorld extends World {
      genIndex++; 
      
      MyCreature parent1, parent2, offspring;
- 
-     for(int i=0;i<numCreatures/2; i++) {
+     int elitismIndex = numCreatures * 9/10;
+     
+     
+     for(int i=0; i < numCreatures/2; i++) {
     	 
     	 parent1 = parentSelection(creatureFitnessMap); 
          parent2 = parentSelection(creatureFitnessMap);
          
          offspring = crossOver(parent1, parent2);
          new_population[i] = offspring; 
-         
+     }
      /*    System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
 	   	  for(int x : parent1.chromosome){
 	   		  System.out.print(x);
@@ -314,17 +309,17 @@ public class MyWorld extends World {
 	   	  }
 	   	  System.out.println();*/
          
-     }
+     
      
      //Elitism! - keep half of old population - change to subset n 
-     //should not exceed 10% of the total population to maintian diversity
+     //should not exceed 10% of the total population to maintain diversity
      //5% may be direct part of next generation and remaining should go through crossover
-     
-     for(int i=numCreatures/2; i < numCreatures; i++) {
-         new_population[i] = old_population[i];
+     for(int i= numCreatures/2; i < numCreatures; i++) {
+    	 //make sure we're only keeping the fittest!! 
+         new_population[i] = old_population[i]; 
      }
 
-     // Return new population of cratures. same number as old population. 
+     // Return new population of creatures. same number as old population. 
      return new_population;
   }
   

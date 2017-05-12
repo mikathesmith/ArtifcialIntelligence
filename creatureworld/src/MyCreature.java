@@ -51,12 +51,13 @@ public class MyCreature extends Creature {
       this.numActions = numActions;  //expected from the agentfunction
       cID++; 
       creatureID = cID; //way to uniquelly identify a creature 
-      chromosome = new int[8];
+      chromosome = new int[11];
       //Index 0 = eat green stawberry or not
       //Index 1, 2, 3 = avoidance behaviour if x1, opposite behaviour if x2, or if both? 
       //Index 4, 5, 6 = attraction behaviour 
       //Index 7 = follow other creatures or not
-      //Index 8 = always random behaviour 
+      //Index 8 = always random behaviour  ??
+      //Index 9, 10, 11 = default behaviour 
       for(int i=0; i < chromosome.length;i++){
     	  chromosome[i] = rand.nextInt(2); //initialises genes to either 1 or 0 
       }
@@ -141,7 +142,9 @@ public class MyCreature extends Creature {
       Boolean reactToOthers = (chromosome[7]==1) ? true : false; 
       StringBuilder avoidance = constructGene(chromosome[1], chromosome[2], chromosome[3]);
 	  StringBuilder attraction = constructGene(chromosome[4], chromosome[5], chromosome[6]);
+	  StringBuilder defaultBehaviour = constructGene(chromosome[8], chromosome[9], chromosome[10]);
 	  final int ACTIONEXECUTED = 10;
+	  
       
       //the random values must be changed so they are based on the parameters of a
       //given creature's chromosome.
@@ -157,12 +160,17 @@ public class MyCreature extends Creature {
 	 }else if(percepts[0]!=0 || percepts[1]!=0){ //monsters in vicinity  - should be priority! 
 	//	 String monsterLocation = findLocation(percepts[0], percepts[1]); //gets the location of monster  		 
 		 //Do some computation to find a direction to avoid the monster using avoidance gene. 
-		 flipBit = (percepts[0]==1) ? true : false;  
-		 moveDirection = findDirection(avoidance, flipBit, percepts[1]);
-
+	//	 if(percepts[0]==-1){
+	//		actions[10] = ACTIONEXECUTED;  //do random movement - this means we'll never react if monster is in a certain row/column! 
+		//	System.out.println("So random")
+//		 }else{
+			 flipBit = (percepts[0]==1) ? true : false; 
+			 moveDirection = findDirection(avoidance, flipBit, percepts[1]);
+			 actions[moveDirection] = ACTIONEXECUTED;
+	//	 }
 		// moveDirection = findDirection(avoidance, monsterLocation);
 		// System.out.println("Moving in direction " + moveDirection);
-		 actions[moveDirection] = ACTIONEXECUTED; //0 to 7 inclusive for movement in some direction 
+		  //0 to 7 inclusive for movement in some direction 
 	
 	 }else{ //no monsters in vicinity
 		if(reactToOthers && (percepts[2]!=0 || percepts[3]!=0)){
@@ -181,8 +189,10 @@ public class MyCreature extends Creature {
  			 actions[moveDirection] = ACTIONEXECUTED; 
 	     }
 		 
-		 //If everything is 0, do random movements, lowest priority  
-		 actions[10] = ACTIONEXECUTED/2; //currently do random movement - change to be based on chromosome??    
+		 //If everything is 0, do random movements, lowest priority 
+		 moveDirection= directionMap.get(defaultBehaviour.toString());
+		 actions[moveDirection] = ACTIONEXECUTED/2; //currently do random movement - change to be based on chromosome??    
+		 //encode default behaviour !! 
 	 }
 	 
 	//return array of actions. The index of the largest value will be the action executed 
