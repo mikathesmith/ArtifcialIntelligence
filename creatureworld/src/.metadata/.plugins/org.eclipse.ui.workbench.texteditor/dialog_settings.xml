@@ -2,12 +2,13 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="rand" key="selection"/>
+		<item value="max" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
-		<item value="false" key="wholeword"/>
+		<item value="true" key="wholeword"/>
 		<list key="findhistory">
+			<item value="max"/>
 			<item value="rand"/>
 			<item value="rand&apos;"/>
 			<item value="mutation"/>
@@ -16,6 +17,7 @@
 			<item value="agent"/>
 		</list>
 		<list key="replacehistory">
+			<item value="maxFitness"/>
 			<item value="creature"/>
 		</list>
 	</section>

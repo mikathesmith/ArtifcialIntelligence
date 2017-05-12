@@ -25,7 +25,7 @@ public class MyWorld extends World {
    * execute.
   */
   private final int _numTurns = 85;
-  private final int _numGenerations = 1000;
+  private final int _numGenerations = 500;
   
   //The name of the file to write the fitness data to to produce a graph from 
   private static final String FILENAME = "fitnessdata.txt";
@@ -112,14 +112,13 @@ public class MyWorld extends World {
   //Find two creatures with maximal fitnesses and breed
   //need to update so that we are using roulette wheel or tournament selection!  
   public MyCreature parentSelection(HashMap<MyCreature, Double> creatureFitnessMap){
-	  //Choose a subset to iterate!  creatureFitnessMap.size()/4
-	  double max = 0;
+
+	  double maxFitness = 0;
 	  ArrayList<MyCreature> fitCandidates = new ArrayList<MyCreature>();  
-	  int subsetSize = 5;
+	  int subsetSize = 5; //This is the number of individuals we will randomly select and choose the best of
+	//  int subsetSize = (creatureFitnessMap.size() < 10) ? 1 : 5; 
 	  int minID = Integer.MAX_VALUE;
 	  int maxID = Integer.MIN_VALUE;
-	  
-	  
 	  //Loop through to get min and max values to find range
 	  for(Map.Entry<MyCreature, Double> entry : creatureFitnessMap.entrySet()){
 		  int currentID = entry.getKey().creatureID; 
@@ -133,10 +132,8 @@ public class MyWorld extends World {
 	  
 	  //Get 5 random inidividuals to add to 
 	  while(fitCandidates.size() < subsetSize){
-		  int cand = minID + rand.nextInt(maxID - minID + 1); //random index in range of creature ID's 
+		  int cand = minID + rand.nextInt(maxID - minID + 1); //Random index in range of creature ID's 
 		  
-		  //Find a better way to grab creatures ? This deals with the in case the creature has been removed
-		  //ie already selected
 		  for(Map.Entry<MyCreature, Double> entry : creatureFitnessMap.entrySet()){
 			  MyCreature creat = entry.getKey(); 
 			  if(creat.creatureID == cand){ 
@@ -152,33 +149,40 @@ public class MyWorld extends World {
 		  double currentFitness = creatureFitnessMap.get(creat);
 		  if(fittest==null) fittest = creat; //ensure we aren't returning a null 
 	
-		  if(currentFitness > max){
-			  max = currentFitness;
+		  if(currentFitness > maxFitness){
+			  maxFitness = currentFitness;
 			  fittest = creat; 
 		  }
 	  }
 	  
-	  //Can we choose the same parent twice? 
+	  //Remove this statement if we would like to enable choosing the same parent twice
 	  creatureFitnessMap.remove(fittest); 
+	  
 	  return fittest;   
   }
   
   //Takes two chromosomes and returns a new one by crossing them over 
   public MyCreature crossOver(MyCreature p1, MyCreature p2){
+
 	  //set crossover point. 
 	  int numPercepts = this.expectedNumberofPercepts();
 	  int numActions = this.expectedNumberofActions();
 	  
 	  //This is the midpoint of the chromosome. Should this be a random point? 
-	  int crossoverIndex = p1.chromosome.length/2;
+	 // int crossoverIndex = p1.chromosome.length/2;
+	  int choice = rand.nextInt(2); //0 or 1
+	  int crossoverIndex = (choice == 0) ? 3 : 6; 
 	 // System.out.println(crossoverIndex);
+	  
+	  //Create a child creature 
 	  MyCreature offspring = new MyCreature(numPercepts, numActions);
 	  
+	  
 	  //Replace offspring's random chromosome with half of p1 and half of p2 at the crossover point. 
-	  for(int i=0; i <= crossoverIndex; i++){
+	  for(int i = 0; i <= crossoverIndex; i++){
 		  offspring.chromosome[i] = p1.chromosome[i];
 	  }
-	  for(int i= crossoverIndex + 1; i < p1.chromosome.length;i++){
+	  for(int i = crossoverIndex + 1; i < p1.chromosome.length; i++){
 		  offspring.chromosome[i] = p2.chromosome[i];
 	  }
 	  
@@ -187,8 +191,10 @@ public class MyWorld extends World {
 	  if(probMutate < mutationProb){ 
 		  offspring = mutation(offspring);
 	  }
+	  
 	  return offspring; 
   }
+  
   
   //Mutates with some random probability by flipping a random bit
   public MyCreature mutation(MyCreature child){
@@ -246,15 +252,12 @@ public class MyWorld extends World {
            avgLifeTime += (float) _numTurns;
         }
      }
-     //crossover, add random mutation to the chromosome. 
-     //print average fitness of all creatures and plot this over generations. 
-
      avgLifeTime /= (float) numCreatures;
      avgFitness /= (float) numCreatures; 
-     System.out.println("Simulation stats:");
+  /*   System.out.println("Simulation stats:");
      System.out.println("  Survivors    : " + nSurvivors + " out of " + numCreatures);
      System.out.println("  Avg life time: " + avgLifeTime + " turns");
-     System.out.println("  Avg fitness: " + avgFitness);
+     System.out.println("  Avg fitness: " + avgFitness);*/ 
      
     
     //Writing data to text file to plot on graph using FitnessLineChart 
@@ -280,18 +283,15 @@ public class MyWorld extends World {
      genIndex++; 
      
      MyCreature parent1, parent2, offspring;
-     int elitismIndex = numCreatures * 9/10;
-     
-     
-     for(int i=0; i < numCreatures/2; i++) {
-    	 
+     int elitismIndex = (int) (numCreatures * (9.0/10.0));
+     System.out.println(numCreatures);
+     for(int i=0; i < elitismIndex; i++) {
+
     	 parent1 = parentSelection(creatureFitnessMap); 
          parent2 = parentSelection(creatureFitnessMap);
-         
          offspring = crossOver(parent1, parent2);
-         new_population[i] = offspring; 
-     }
-     /*    System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
+         
+         System.out.print("Parent 1:  " + parent1.creatureID + " Genotype: ");
 	   	  for(int x : parent1.chromosome){
 	   		  System.out.print(x);
 	   	  }
@@ -307,14 +307,21 @@ public class MyWorld extends World {
 	   	  for(int x : offspring.chromosome){
 	   		  System.out.print(x);
 	   	  }
-	   	  System.out.println();*/
+	   	  System.out.println();
          
+        
+         new_population[i] = offspring;    
+         double fitness = calculateFitness(100, false);  //don't know fitness!! give maximum 
+    //     if(creatureFitnessMap.size() ==0 ) System.out.println("No more parents!"); 
+         creatureFitnessMap.put(offspring, fitness); //only 1 creature in map     
+     }
      
-     
-     //Elitism! - keep half of old population - change to subset n 
+
+     //Elitism! 
      //should not exceed 10% of the total population to maintain diversity
      //5% may be direct part of next generation and remaining should go through crossover
-     for(int i= numCreatures/2; i < numCreatures; i++) {
+     
+    for(int i= elitismIndex; i < numCreatures; i++) {
     	 //make sure we're only keeping the fittest!! 
          new_population[i] = old_population[i]; 
      }

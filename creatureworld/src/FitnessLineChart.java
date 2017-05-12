@@ -37,20 +37,15 @@ public class FitnessLineChart extends Application {
           final NumberAxis xAxis = new NumberAxis();
           final NumberAxis yAxis = new NumberAxis();
           xAxis.setLabel("Generation");
-          //yAxis.setLabel("Average Fitness"); 
-          yAxis.setLabel("Average Life Time");
+          yAxis.setLabel("Average Fitness"); 
           
           //Manually set lower and upper bounds for fitness on the y axis
-         //  yAxis.setLowerBound(1); 
-          //yAxis.setUpperBound(8);
-          yAxis.setLowerBound(30); 
-          yAxis.setUpperBound(60);
+          yAxis.setLowerBound(1); 
+          yAxis.setUpperBound(9);
           yAxis.setAutoRanging(false);
           
           //Create the line chart 
           final LineChart<Number,Number> lineChart =  new LineChart<Number,Number>(xAxis,yAxis);
-        //  lineChart.setTitle("Average Fitness over 500 Generations");
-          lineChart.setTitle("Average Life Time over 500 Generations");
           lineChart.setCreateSymbols(false); //creates more of a trend 
           
           //Create window with line chart 
@@ -60,9 +55,6 @@ public class FitnessLineChart extends Application {
           Series<Number, Number> series = new XYChart.Series<Number, Number>();
 	      series.setName("Average Fitness over generations");
 	      
-	      Series<Number, Number> series2 = new XYChart.Series<Number, Number>();
-		  series2.setName("Average Lifetime");
-	      
 	      //Trend line 
 	   //   Series<Number, Number> series2 = new XYChart.Series<Number, Number>();
 	    //  series2.setName("Trend Line");
@@ -71,6 +63,7 @@ public class FitnessLineChart extends Application {
 	      //int xi= 0, yi=0; 
 	           
 	      //Read in input from our file generated from MyWorld containing values of average fitness 
+	      int gen=0; 
 	      try {
 	    	    BufferedReader in = new BufferedReader(new FileReader(FILENAME));
 	    	    String str;
@@ -78,7 +71,7 @@ public class FitnessLineChart extends Application {
 	    	    while ((str = in.readLine()) != null){
 	    	    	str= in.readLine(); 
 	    	    	Scanner sc = new Scanner(str);
-	    	    	int gen = sc.nextInt();
+	    	    	gen = sc.nextInt();
 	    	 //   	xs[xi] = (double) gen;
 	    	  //  	xi++;
 	    	    	float fitness = sc.nextFloat(); 
@@ -87,13 +80,13 @@ public class FitnessLineChart extends Application {
 	    	   // 	ys[yi] = (double)fitness; 
 	    	   // 	yi++;
 	    	    	addToChart(series, gen, fitness); 
-	    	    	addToChart(series2, gen, life);
 	    	    	sc.close(); 
 	    	    } 
 	    	    in.close();
 	    	} catch (IOException e) {
 	    		e.printStackTrace();
 	    	}
+	      lineChart.setTitle("Average Fitness over " + gen + " Generations");
 	    	
 	      
 	  /*    	double[] coefficients = polyfit(xs, ys, 2); //polynomial trend algorithm, xs and ys are double arrays holding data points?? or axis?
@@ -106,8 +99,7 @@ public class FitnessLineChart extends Application {
 	    
 	    	
 	      //Add our series data to the linechart 
-       // lineChart.getData().add(series); //Average fitness
-        lineChart.getData().add(series2); //Average lifetime
+        lineChart.getData().add(series); //Average fitness
        
         //Add linechart to window
         stage.setScene(scene);

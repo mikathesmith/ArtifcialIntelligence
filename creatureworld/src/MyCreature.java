@@ -189,10 +189,9 @@ public class MyCreature extends Creature {
  			 actions[moveDirection] = ACTIONEXECUTED; 
 	     }
 		 
-		 //If everything is 0, do random movements, lowest priority 
+		 //If everything is 0, execute the default behaviour at the lowest priority 
 		 moveDirection= directionMap.get(defaultBehaviour.toString());
 		 actions[moveDirection] = ACTIONEXECUTED/2; //currently do random movement - change to be based on chromosome??    
-		 //encode default behaviour !! 
 	 }
 	 
 	//return array of actions. The index of the largest value will be the action executed 
