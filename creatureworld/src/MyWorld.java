@@ -96,7 +96,6 @@ public class MyWorld extends World {
   public double calculateFitness(int energy, Boolean dead){
 	  if(!dead) return 15; //If they survived, give them maximum value 
 	  double fitness = (double)energy/10; //if not, set their fitness as their energy from 1 to 10 
-	//  System.out.println(energy + " " + fitness);
 	  return fitness;
   }
   

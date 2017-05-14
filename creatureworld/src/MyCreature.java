@@ -86,16 +86,14 @@ public class MyCreature extends Creature {
    * 		flip	  :  whether or not to flip a bit 
    * 		bitToFlip :  -1, 0 or 1. Indicates position of bit to flip. 
    */
-  public int findDirection(StringBuilder gene, Boolean flip, int bitToFlip){ //have a bool value opposite? 
-	  //If we are need to flip a bit 
-	  if(flip){
-		 //else replace character at bitToFlip position in gene, then get the new gene value
+  public int findDirection(StringBuilder gene, Boolean flip, int bitToFlip){ 
+	  if(flip){ //If we need to flip a bit 
 	     //Find the value of the bit we need to flip in position bitToFlip+1 and flip it (0 to 1, 1 to 0)
 		 int toFlip = Character.getNumericValue(gene.charAt(bitToFlip+1));
 		 toFlip ^= 1; 
 		 String flipString = Integer.toString(toFlip); 
 		 
-		 //Replace the old bit with the modified bit 
+		 //Replace the old bit with the modified bit at position bitToFlip 
 		 gene.setCharAt(bitToFlip+1, flipString.charAt(0));
 	 }
 	  //Return the associated action of the new gene
@@ -161,7 +159,7 @@ public class MyCreature extends Creature {
 		 
 		 //If all percepts are 0, execute the default behaviour at the lowest priority 
 		 if(randDefault){ //If random bit set, then do random movement as default behaviour 
-			 actions[10] = ACTIONEXECUTED/2;
+			 actions[10] = ACTIONEXECUTED/3;
 		 }else{ //if not set, move in a specific direction as default behaviour 
 			 moveDirection= directionMap.get(defaultBehaviour.toString());
 			 actions[moveDirection] = ACTIONEXECUTED/3; 

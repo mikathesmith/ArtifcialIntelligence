@@ -2,12 +2,13 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="max" key="selection"/>
+		<item value="MUTATIONRATE" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="true" key="wholeword"/>
 		<list key="findhistory">
+			<item value="mutationProb"/>
 			<item value="max"/>
 			<item value="rand"/>
 			<item value="rand&apos;"/>
@@ -17,14 +18,15 @@
 			<item value="agent"/>
 		</list>
 		<list key="replacehistory">
+			<item value="MUTATIONRATE"/>
 			<item value="maxFitness"/>
 			<item value="creature"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item value="265" key="DIALOG_WIDTH"/>
-		<item value="1|.SF NS Text|11.0|0|COCOA|1|.SFNSText" key="DIALOG_FONT_NAME"/>
-		<item value="399" key="DIALOG_HEIGHT"/>
+		<item value="385" key="DIALOG_WIDTH"/>
+		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-18|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+		<item value="523" key="DIALOG_HEIGHT"/>
 		<item value="645" key="DIALOG_X_ORIGIN"/>
 		<item value="158" key="DIALOG_Y_ORIGIN"/>
 	</section>
