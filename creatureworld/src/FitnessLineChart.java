@@ -8,9 +8,6 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.stage.Stage;
  
-//import static thorwin.math.Math.polyfit;
-//import static thorwin.math.Math.polynomial;
- 
 /**
 * The FitnessLineChart class extends the JavaFX LineChart Application Class. 
 * 
@@ -20,8 +17,8 @@ import javafx.stage.Stage;
 * Note: Must delete old fitnessdata.txt everytime you want to run a new round 
 *
 * @author  Mika Smith 
-* @version 5.0
-* @since   2017-04-05 
+* @version 6.0
+* @since   2017-14-05 
 */
 
 public class FitnessLineChart extends Application {
@@ -40,8 +37,8 @@ public class FitnessLineChart extends Application {
           yAxis.setLabel("Average Fitness"); 
           
           //Manually set lower and upper bounds for fitness on the y axis
-          yAxis.setLowerBound(1); 
-          yAxis.setUpperBound(9);
+          yAxis.setLowerBound(2); 
+          yAxis.setUpperBound(9.5);
           yAxis.setAutoRanging(false);
           
           //Create the line chart 
@@ -54,14 +51,7 @@ public class FitnessLineChart extends Application {
           //Create data series for fitness over fenerations
           Series<Number, Number> series = new XYChart.Series<Number, Number>();
 	      series.setName("Average Fitness over generations");
-	      
-	      //Trend line 
-	   //   Series<Number, Number> series2 = new XYChart.Series<Number, Number>();
-	    //  series2.setName("Trend Line");
-	     // double[] ys = new double[500];
-	      //double[] xs = new double[500];
-	      //int xi= 0, yi=0; 
-	           
+
 	      //Read in input from our file generated from MyWorld containing values of average fitness 
 	      int gen=0; 
 	      try {
@@ -72,13 +62,8 @@ public class FitnessLineChart extends Application {
 	    	    	str= in.readLine(); 
 	    	    	Scanner sc = new Scanner(str);
 	    	    	gen = sc.nextInt();
-	    	 //   	xs[xi] = (double) gen;
-	    	  //  	xi++;
 	    	    	float fitness = sc.nextFloat(); 
 	    	    	float life = sc.nextFloat(); 
-	    	 //   	System.out.println(life);
-	    	   // 	ys[yi] = (double)fitness; 
-	    	   // 	yi++;
 	    	    	addToChart(series, gen, fitness); 
 	    	    	sc.close(); 
 	    	    } 
@@ -88,25 +73,12 @@ public class FitnessLineChart extends Application {
 	    	}
 	      lineChart.setTitle("Average Fitness over " + gen + " Generations");
 	    	
-	      
-	  /*    	double[] coefficients = polyfit(xs, ys, 2); //polynomial trend algorithm, xs and ys are double arrays holding data points?? or axis?
-	
-	        for (double x = 0; x <= 5.0; x += 0.05) {
-	            double y = polynomial(x, coefficients);
-	            System.out.println(y);
-	            series2.getData().add(new XYChart.Data<>(x, y));
-	        }*/ 
-	    
-	    	
-	      //Add our series data to the linechart 
+	    //Add our series data to the linechart 
         lineChart.getData().add(series); //Average fitness
        
         //Add linechart to window
         stage.setScene(scene);
         stage.show();
-        
-    //    stage.setScene(scene2);
-      //  stage.show();
     }
  
     public static void main(String[] args) {

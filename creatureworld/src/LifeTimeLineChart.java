@@ -8,9 +8,6 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.stage.Stage;
  
-//import static thorwin.math.Math.polyfit;
-//import static thorwin.math.Math.polynomial;
- 
 /**
 * The Life Time LineChart class extends the JavaFX LineChart Application Class. 
 * 
@@ -52,19 +49,9 @@ public class LifeTimeLineChart extends Application {
           //Create window with line chart 
           Scene scene  = new Scene(lineChart,800,600);
           
-          //Create data series for fitness over fenerations
-          Series<Number, Number> series = new XYChart.Series<Number, Number>();
-	      series.setName("Average Lifetime over generations");
-	      
+          //Create data series for lifetime over generations
 	      Series<Number, Number> series2 = new XYChart.Series<Number, Number>();
 		  series2.setName("Average Lifetime");
-	      
-	      //Trend line 
-	   //   Series<Number, Number> series2 = new XYChart.Series<Number, Number>();
-	    //  series2.setName("Trend Line");
-	     // double[] ys = new double[500];
-	      //double[] xs = new double[500];
-	      //int xi= 0, yi=0; 
 	           
 	      //Read in input from our file generated from MyWorld containing values of average fitness 
 		  int gen=0; 
@@ -76,13 +63,8 @@ public class LifeTimeLineChart extends Application {
 	    	    	str= in.readLine(); 
 	    	    	Scanner sc = new Scanner(str);
 	    	    	gen = sc.nextInt();
-	    	 //   	xs[xi] = (double) gen;
-	    	  //  	xi++;
 	    	    	float fitness = sc.nextFloat(); 
 	    	    	float life = sc.nextFloat(); 
-	    	 //   	System.out.println(life);
-	    	   // 	ys[yi] = (double)fitness; 
-	    	   // 	yi++;
 	    	    	addToChart(series2, gen, life);
 	    	    	sc.close(); 
 	    	    } 
@@ -91,25 +73,12 @@ public class LifeTimeLineChart extends Application {
 	    		e.printStackTrace();
 	    	}
 	      lineChart.setTitle("Average Life Time over " + gen + " Generations");
-	      
-	  /*    	double[] coefficients = polyfit(xs, ys, 2); //polynomial trend algorithm, xs and ys are double arrays holding data points?? or axis?
-	
-	        for (double x = 0; x <= 5.0; x += 0.05) {
-	            double y = polynomial(x, coefficients);
-	            System.out.println(y);
-	            series2.getData().add(new XYChart.Data<>(x, y));
-	        }*/ 
-	    
-	    	
-	      //Add our series data to the linechart 
+	    //Add our series data to the linechart 
         lineChart.getData().add(series2); //Average lifetime
        
         //Add linechart to window
         stage.setScene(scene);
         stage.show();
-        
-    //    stage.setScene(scene2);
-      //  stage.show();
     }
  
     public static void main(String[] args) {
